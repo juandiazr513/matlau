@@ -1,0 +1,960 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>MatLau</title>
+<meta name="description" content="Práctica diaria de matemáticas para niños, de preescolar a 2° básico.">
+<meta name="theme-color" content="#2C5BA6">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="MatLau">
+<style>
+@font-face{font-family:"Andika";font-weight:400;font-style:normal;font-display:swap;src:url(fonts/andika-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"Andika";font-weight:700;font-style:normal;font-display:swap;src:url(fonts/andika-latin-700-normal.woff2) format("woff2")}
+@font-face{font-family:"Baloo 2";font-weight:700;font-style:normal;font-display:swap;src:url(fonts/baloo-2-latin-700-normal.woff2) format("woff2")}
+@font-face{font-family:"Baloo 2";font-weight:800;font-style:normal;font-display:swap;src:url(fonts/baloo-2-latin-800-normal.woff2) format("woff2")}
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<style>
+:root{
+  --paper:#F5F7FB; --grid:rgba(58,108,178,.10); --surface:#FFFFFF; --surface-2:#EEF2F9;
+  --ink:#1A2847; --ink-2:#56647F; --line:#D3DCEA;
+  --accent:#2C5BA6; --accent-ink:#FFFFFF; --accent-soft:#DCE7F7;
+  --red:#CF3F36; --red-soft:#FBE3E0; --ok:#23845A; --ok-soft:#DDF2E7;
+  --warn:#B7791F; --warn-soft:#FBEFD8; --mark:#FFE37A; --mark-ink:#1A2847;
+  --shadow:0 1px 2px rgba(26,40,71,.06),0 6px 18px rgba(26,40,71,.07);
+  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --body:"Andika","Verdana",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  color-scheme:dark;
+  --paper:#101828; --grid:rgba(130,170,230,.07); --surface:#172238; --surface-2:#1E2B45;
+  --ink:#E7EDF8; --ink-2:#9DAAC4; --line:#2B3956;
+  --accent:#86ABEC; --accent-ink:#0F1A2E; --accent-soft:#233A60;
+  --red:#FF8277; --red-soft:#4A2226; --ok:#5ACB8F; --ok-soft:#1D3D30;
+  --warn:#E9B25A; --warn-soft:#3E3120; --mark:#6A5714; --mark-ink:#FFF4C4;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25);
+}}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --paper:#101828; --grid:rgba(130,170,230,.07); --surface:#172238; --surface-2:#1E2B45;
+  --ink:#E7EDF8; --ink-2:#9DAAC4; --line:#2B3956;
+  --accent:#86ABEC; --accent-ink:#0F1A2E; --accent-soft:#233A60;
+  --red:#FF8277; --red-soft:#4A2226; --ok:#5ACB8F; --ok-soft:#1D3D30;
+  --warn:#E9B25A; --warn-soft:#3E3120; --mark:#6A5714; --mark-ink:#FFF4C4;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:26px 26px;
+  color:var(--ink); font-family:var(--body); font-size:16px; line-height:1.5;
+}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+#app{max-width:1080px;margin:0 auto;padding-inline:16px;padding-block:12px 40px}
+h1,h2,h3{font-family:var(--display);line-height:1.15;text-wrap:balance;margin:0}
+.muted{color:var(--ink-2)}
+.tnum{font-variant-numeric:tabular-nums}
+
+/* top bar */
+.top{display:flex;align-items:center;gap:12px;padding-block:6px 14px;flex-wrap:wrap}
+.brand{font-family:var(--display);font-weight:800;font-size:1.9rem;letter-spacing:-.01em;line-height:1}
+.brand span{color:var(--accent)}
+.top .sp{flex:1}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px;font-size:.92rem}
+.chip.on{border-color:var(--accent);background:var(--accent-soft)}
+.btn{border:0;border-radius:14px;padding:10px 18px;background:var(--surface-2);font-weight:700}
+.btn.pri{background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent;border:1.5px solid var(--line)}
+.btn.danger{background:var(--red);color:#fff}
+.btn:disabled{opacity:.5;cursor:default}
+.hold{position:relative;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
+.hold i{position:absolute;left:0;bottom:0;height:3px;width:0;background:var(--accent)}
+.hold.holding i{width:100%;transition:width .8s linear}
+
+/* child home */
+.kid{display:grid;place-items:center;min-height:62vh;text-align:center;gap:18px}
+.kid .who{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.bigcard{background:var(--surface);border-radius:28px;box-shadow:var(--shadow);padding:28px 24px;width:min(460px,100%);display:grid;gap:14px;justify-items:center}
+.bigcard .paso{font-family:var(--display);font-weight:800;font-size:3.4rem;line-height:1;color:var(--accent)}
+.bigcard .sub{font-size:1.05rem;color:var(--ink-2)}
+.go{font-family:var(--display);font-size:1.7rem;font-weight:800;border:0;border-radius:22px;padding:14px 44px;background:var(--accent);color:var(--accent-ink);box-shadow:0 4px 0 color-mix(in srgb,var(--accent) 60%,#000)}
+.go:active{transform:translateY(3px);box-shadow:0 1px 0 color-mix(in srgb,var(--accent) 60%,#000)}
+.today{display:flex;gap:6px;justify-content:center}
+.today b{width:14px;height:14px;border-radius:50%;background:var(--ok)}
+.today b.e{background:var(--line)}
+
+/* exercise */
+.ex{display:grid;grid-template-rows:auto 1fr auto;min-height:calc(100vh - 40px);gap:10px}
+.exbar{display:flex;align-items:center;gap:10px}
+.dots{flex:1;display:flex;gap:5px;flex-wrap:wrap}
+.dots b{flex:1;min-width:8px;max-width:28px;height:8px;border-radius:5px;background:var(--line)}
+.dots b.d{background:var(--ok)}
+.dots b.c{background:var(--accent)}
+.icon{width:44px;height:44px;border-radius:14px;border:1.5px solid var(--line);background:var(--surface);display:grid;place-items:center;padding:0}
+.icon svg{width:22px;height:22px}
+.icon.help{border-color:var(--warn);color:var(--warn)}
+.stage{display:grid;place-items:center;align-content:center;gap:16px;text-align:center;padding-block:8px}
+.q{font-family:var(--body);font-weight:700;font-size:clamp(2.5rem,10vw,4.2rem);line-height:1.1;display:flex;align-items:center;gap:.28em;flex-wrap:wrap;justify-content:center}
+.ans{min-width:1.9em;height:1.35em;padding:0 .18em;border-radius:14px;border:3px solid var(--accent);background:var(--surface);display:inline-grid;place-items:center;color:var(--ink)}
+.ans.empty::after{content:"";width:3px;height:.9em;background:var(--accent);animation:blink 1s steps(2) infinite}
+.ans.ghost{color:var(--ink-2);opacity:.55}
+@keyframes blink{50%{opacity:0}}
+.lbl{font-size:1.1rem;color:var(--ink-2)}
+.ok-flash .ans{border-color:var(--ok);background:var(--ok-soft)}
+.shake{animation:shake .35s}
+.shake .ans{border-color:var(--red);background:var(--red-soft)}
+@keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+@media (prefers-reduced-motion:reduce){.shake,.ans.empty::after{animation:none}}
+
+.frames{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.frame{display:grid;grid-template-columns:repeat(5,34px);gap:6px;padding:8px;border:2px solid var(--line);border-radius:12px;background:var(--surface)}
+.frame i{width:34px;height:34px;border-radius:50%;border:2px dashed var(--line)}
+.frame i.f{background:var(--accent);border:0}
+.word{font-family:var(--display);font-size:clamp(2.2rem,8vw,3.2rem);font-weight:700}
+.opts{display:grid;grid-template-columns:repeat(4,minmax(64px,1fr));gap:12px;width:min(480px,100%)}
+.opt{font-weight:700;font-size:2.2rem;border:3px solid var(--line);background:var(--surface);border-radius:18px;padding:10px 0}
+.opt.bad{border-color:var(--red);background:var(--red-soft)}
+.opt.done{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.slots{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.slot{width:70px;height:62px;border:3px dashed var(--line);border-radius:14px;display:grid;place-items:center;font-weight:700;font-size:2rem}
+.slot.f{border-style:solid;border-color:var(--ok);color:var(--ok)}
+.seq{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.seq span{min-width:2.1em;padding:0 .2em;height:1.5em;display:grid;place-items:center;border:2px solid var(--line);border-radius:12px;background:var(--surface);font-weight:700;font-size:clamp(1.8rem,7vw,2.8rem)}
+.seq .ans{height:1.5em;font-size:clamp(1.8rem,7vw,2.8rem)}
+.arrow{display:inline-grid;justify-items:center;line-height:1}
+.arrow small{font-size:.35em;color:var(--accent);font-weight:700}
+.linewrap{max-width:100%;overflow-x:auto;padding-bottom:4px}
+.linewrap svg{display:block;margin:0 auto}
+
+.vert{display:grid;font-weight:700;font-size:clamp(2.2rem,9vw,3.4rem);line-height:1.25;justify-content:center;column-gap:4px;row-gap:.12em}
+.vert .c{width:1.05em;text-align:center}
+.vert .carry{width:.8em;height:.8em;margin:0 auto;border:2px dashed var(--line);border-radius:8px;font-size:.5em;display:grid;place-items:center;background:transparent;padding:0;align-self:end}
+.vert .carry.f{border-style:solid;border-color:var(--warn);background:var(--mark);color:var(--mark-ink)}
+.vert .rule{grid-column:1 / -1;border-top:4px solid var(--ink);margin:4px 0}
+.vert .cell{width:1.05em;height:1.2em;border:3px solid var(--line);border-radius:10px;display:grid;place-items:center;background:var(--surface)}
+.vert .cell.cur{border-color:var(--accent);background:var(--mark);color:var(--mark-ink)}
+.vert.bad .cell{border-color:var(--red)}
+.vert.good .cell{border-color:var(--ok)}
+
+.example{background:var(--surface);border-radius:24px;box-shadow:var(--shadow);padding:22px;display:grid;gap:14px;justify-items:center}
+.example .tag{font-family:var(--display);font-weight:700;font-size:1.2rem;color:var(--warn)}
+
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:min(420px,100%);margin:0 auto;padding-bottom:env(safe-area-inset-bottom,0px)}
+.pad button{font-weight:700;font-size:1.8rem;border:0;border-radius:16px;background:var(--surface);box-shadow:0 2px 0 var(--line);padding:10px 0;min-height:58px}
+.pad button:active{transform:translateY(2px);box-shadow:none}
+.pad .okk{background:var(--ok);color:#fff;box-shadow:0 2px 0 color-mix(in srgb,var(--ok) 60%,#000)}
+.pad .del{background:var(--surface-2)}
+.confirm{background:var(--surface);border:2px solid var(--red);border-radius:16px;padding:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center}
+
+.done{display:grid;place-items:center;text-align:center;gap:16px;min-height:70vh}
+.stamp{width:150px;height:150px;border-radius:50%;border:6px solid var(--ok);color:var(--ok);display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:2rem;transform:rotate(-8deg)}
+
+/* adult */
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.tabs button{border:0;background:transparent;border-bottom:3px solid transparent;padding:6px 10px;font-weight:700;color:var(--ink-2)}
+.tabs button.on{color:var(--ink);border-color:var(--accent)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;display:grid;gap:10px;align-content:start}
+.card h3{font-size:1.2rem}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:.95rem}
+.kv dt{color:var(--ink-2)}
+.kv dd{margin:0;font-weight:700}
+.pill{display:inline-block;border-radius:999px;padding:2px 10px;font-size:.82rem;font-weight:700}
+.p-ok{background:var(--ok-soft);color:var(--ok)}
+.p-warn{background:var(--warn-soft);color:var(--warn)}
+.p-red{background:var(--red-soft);color:var(--red)}
+.p-acc{background:var(--accent-soft);color:var(--accent)}
+.p-mute{background:var(--surface-2);color:var(--ink-2)}
+.checks{list-style:none;margin:0;padding:0;display:grid;gap:6px;font-size:.95rem}
+.checks li{display:flex;gap:8px;align-items:baseline}
+.checks b{width:1.2em;flex:none;text-align:center}
+.checks .y b{color:var(--ok)} .checks .n b{color:var(--red)} .checks .s b{color:var(--ink-2)}
+.skmap{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:6px}
+.sk{border-radius:10px;padding:6px 4px;text-align:center;font-weight:700;font-size:.95rem;border:1.5px solid var(--line)}
+.sk small{display:block;font-weight:400;font-size:.7rem;color:inherit;opacity:.85}
+.sk.none{color:var(--ink-2);border-style:dashed}
+.sk.prac{background:var(--red-soft);color:var(--red);border-color:transparent}
+.sk.prec{background:var(--warn-soft);color:var(--warn);border-color:transparent}
+.sk.flu{background:var(--ok-soft);color:var(--ok);border-color:transparent}
+.legend{display:flex;gap:10px;flex-wrap:wrap;font-size:.8rem;color:var(--ink-2)}
+.legend span{display:inline-flex;gap:4px;align-items:center}
+.legend i{width:12px;height:12px;border-radius:4px;display:inline-block}
+.map{display:grid;gap:8px}
+.map .et{display:grid;grid-template-columns:minmax(150px,220px) 1fr;gap:10px;align-items:center;font-size:.9rem}
+.map .st{display:flex;gap:4px;flex-wrap:wrap}
+.map .st i{width:16px;height:16px;border-radius:4px;background:var(--surface-2);border:1px solid var(--line)}
+.map .st i.d{background:var(--ok);border-color:var(--ok)}
+.map .st i.c{background:var(--mark);border:2px solid var(--accent)}
+@media (max-width:520px){.map .et{grid-template-columns:1fr}}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.9rem;min-width:720px}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-2);background:var(--surface-2)}
+td.n{text-align:right;font-variant-numeric:tabular-nums}
+tr:last-child td{border-bottom:0}
+.banner{background:var(--warn-soft);color:var(--ink);border-radius:14px;padding:10px 14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+label.f{display:grid;gap:4px;font-size:.9rem;color:var(--ink-2)}
+input[type=text],select{font:inherit;color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;width:100%}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:end}
+.foot{margin-top:28px;font-size:.8rem;color:var(--ink-2);text-align:center}
+.sync{font-size:.78rem;color:var(--ink-2)}
+
+/* v2: inicio, audio, camino, pausa, vertical con canje */
+.inicio{display:grid;justify-items:center;gap:22px;padding-block:24px 8px;text-align:center}
+.inicio .brand{font-size:3.2rem}
+.inicio .tag{color:var(--ink-2);font-size:1.05rem;margin-top:-12px}
+.inicio h2{font-size:1.6rem}
+.kids{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,190px));gap:14px;justify-content:center;width:100%}
+.kidcard{background:var(--surface);border:2px solid var(--line);border-radius:22px;padding:18px 12px;display:grid;justify-items:center;gap:8px;box-shadow:var(--shadow)}
+.kidcard:hover{border-color:var(--accent)}
+.avatar{width:72px;height:72px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:2.2rem;color:#fff}
+.kidcard b{font-family:var(--display);font-size:1.25rem;line-height:1.1}
+.kidcard small{color:var(--ink-2)}
+.kidcard.add{border-style:dashed;box-shadow:none;background:transparent;color:var(--ink-2)}
+.kidcard.add .avatar{background:var(--surface-2);color:var(--ink-2)}
+.newkid{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;display:grid;gap:10px;width:min(360px,100%);text-align:left}
+.inicio .adultrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center;color:var(--ink-2);font-size:.9rem}
+
+.instr{display:flex;align-items:center;gap:10px;justify-content:center;font-size:1.15rem;color:var(--ink-2)}
+.instr .icon{width:40px;height:40px}
+.pista{background:var(--warn-soft);color:var(--ink);border-radius:14px;padding:10px 14px;max-width:460px;font-size:1.05rem}
+.camino{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center}
+.camino i{width:22px;height:22px;border-radius:50%;background:var(--surface-2);border:2px solid var(--line);display:grid;place-items:center;font-style:normal;font-size:.72rem;color:#fff;font-weight:700}
+.camino i.d{background:var(--ok);border-color:var(--ok)}
+.camino i.c{background:var(--mark);border:3px solid var(--accent);width:30px;height:30px}
+.sellos{display:flex;align-items:center;gap:8px;font-family:var(--display);font-weight:700;color:var(--ok);font-size:1.15rem}
+.mini-stamp{width:26px;height:26px;border-radius:50%;border:3px solid var(--ok);display:inline-block;transform:rotate(-10deg)}
+.stamp{animation:stampIn .5s ease-out both}
+@keyframes stampIn{0%{transform:scale(1.8) rotate(-20deg);opacity:0}60%{transform:scale(.95) rotate(-6deg);opacity:1}100%{transform:scale(1) rotate(-8deg);opacity:1}}
+@media (prefers-reduced-motion:reduce){.stamp{animation:none}}
+.diagtag{display:inline-block;font-family:var(--display);font-weight:700;font-size:.95rem;letter-spacing:.02em;color:var(--warn);background:var(--warn-soft);border-radius:999px;padding:3px 14px}
+.exlabel{flex:1;font-family:var(--display);font-weight:700;color:var(--warn);font-size:1.05rem}
+.newstep{font-family:var(--display);font-weight:800;font-size:1.3rem;color:var(--accent);background:var(--accent-soft);border-radius:999px;padding:4px 18px}
+.pausecard{background:var(--surface);border-radius:24px;box-shadow:var(--shadow);padding:24px;display:grid;gap:12px;justify-items:center;width:min(380px,100%)}
+.pausecard h2{font-size:2rem}
+.pausecard .btns{display:grid;gap:10px;width:100%}
+
+.vert .note{width:1em;height:.8em;margin:0 auto;border:2px dashed var(--line);border-radius:7px;font-size:.5em;display:grid;place-items:center;background:transparent;padding:0;align-self:end;color:var(--warn);font-weight:700}
+.vert .note.w2{width:1.3em}
+.vert .note.f{border-style:solid;border-color:var(--warn);background:var(--mark);color:var(--mark-ink)}
+.vert .note.sv{border-color:transparent}
+.vert .top{background:none;border:0;padding:0;font:inherit;font-weight:700;width:1.05em;color:inherit}
+.vert .x{text-decoration:line-through;text-decoration-color:var(--red);text-decoration-thickness:4px;color:var(--ink-2)}
+.warnbar{background:var(--red-soft);color:var(--ink);border-radius:14px;padding:10px 14px;margin-bottom:14px}
+.toggles{display:grid;gap:8px}
+.toggles label{display:flex;gap:10px;align-items:center;font-size:.95rem}
+.toggles input{width:20px;height:20px;accent-color:var(--accent)}
+.tarea{display:grid;gap:8px;justify-items:center}
+.tarea .t{font-family:var(--display);font-weight:700;font-size:1.15rem}
+.tarea .boxes{display:flex;gap:8px}
+.tarea .boxes b{width:34px;height:34px;border-radius:10px;border:3px solid var(--line);display:grid;place-items:center;color:#fff;font-size:1.1rem}
+.tarea .boxes b.d{background:var(--ok);border-color:var(--ok)}
+.lista{font-family:var(--display);font-weight:800;font-size:1.6rem;color:var(--ok)}
+.strip{display:grid;grid-template-columns:repeat(14,1fr);gap:4px}
+.strip i{aspect-ratio:1;border-radius:6px;display:grid;place-items:center;font-style:normal;font-size:.68rem;font-weight:700;background:var(--surface-2);color:var(--ink-2)}
+.strip i.ok{background:var(--ok);color:#fff}
+.strip i.par{background:var(--warn-soft);color:var(--warn)}
+.strip i.no{background:var(--red-soft);color:var(--red)}
+.strip i.hoy{outline:2px solid var(--accent);outline-offset:1px}
+.strip i.off{background:transparent;border:1.5px dashed var(--line)}
+.days{display:flex;gap:6px;flex-wrap:wrap}
+.days label{display:grid;justify-items:center;gap:2px;font-size:.85rem;color:var(--ink-2)}
+.days input{width:22px;height:22px;accent-color:var(--accent)}
+</style>
+
+<div id="app"></div>
+
+<script>
+(function(){
+'use strict';
+/* ============ utilidades ============ */
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pickOne=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const MIN='\u2212';
+const uid=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);
+const median=a=>{if(!a.length)return 0;const s=a.slice().sort((x,y)=>x-y);const m=s.length>>1;return s.length%2?s[m]:(s[m-1]+s[m])/2;};
+const sum=a=>a.reduce((x,y)=>x+y,0);
+const fmtS=ms=>{const s=Math.round(ms/1000);return s<60?s+' s':Math.floor(s/60)+' min '+String(s%60).padStart(2,'0')+' s';};
+const fmtSec=ms=>(ms/1000).toFixed(1).replace('.',',')+' s';
+const fmtR=x=>x==null?'—':x.toFixed(2).replace('.',',');
+const pct=x=>Math.round(x*100)+' %';
+const dayKey=d=>{d=new Date(d);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
+const fmtDate=d=>new Date(d).toLocaleDateString('es-CL',{day:'numeric',month:'short'})+' '+new Date(d).toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'});
+const lsGetK=(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}};
+const lsSetK=(k,v)=>{try{if(v==null)localStorage.removeItem(k);else localStorage.setItem(k,JSON.stringify(v));}catch(e){}};
+
+const U=['cero','uno','dos','tres','cuatro','cinco','seis','siete','ocho','nueve','diez','once','doce','trece','catorce','quince','dieciséis','diecisiete','dieciocho','diecinueve','veinte','veintiuno','veintidós','veintitrés','veinticuatro','veinticinco','veintiséis','veintisiete','veintiocho','veintinueve'];
+const TENS={3:'treinta',4:'cuarenta',5:'cincuenta',6:'sesenta',7:'setenta',8:'ochenta',9:'noventa'};
+const palabra=n=>n<30?U[n]:n===100?'cien':TENS[Math.floor(n/10)]+(n%10?' y '+U[n%10]:'');
+
+/* ============ voz y sonido ============ */
+const CFG=Object.assign({voz:true,sonido:true,voiceURI:null,rate:.95},lsGetK('laumat.cfg',{}));
+const saveCfg=()=>lsSetK('laumat.cfg',CFG);
+let esVoice=null;
+let esVoices=[];
+function voiceScore(v){let s=0;if(/^es[-_]CL/i.test(v.lang))s+=3;else if(/^es[-_](419|MX|US|AR|CO)/i.test(v.lang))s+=2;else s+=1;if(/natural|neural|premium|enhanced|mejorad|online/i.test(v.name))s+=5;else if(/google/i.test(v.name))s+=4;if(/eloquence|espeak|compact/i.test(v.name))s-=3;return s;}
+function pickVoice(){try{const vs=window.speechSynthesis.getVoices();if(!vs.length)return;esVoices=vs.filter(v=>/^es/i.test(v.lang)).sort((a,b)=>voiceScore(b)-voiceScore(a));esVoice=(CFG.voiceURI&&esVoices.find(v=>v.voiceURI===CFG.voiceURI))||esVoices[0]||null;S.voiceOk=!!esVoice;}catch(e){S.voiceOk=false;}}
+function speak(t){if(!CFG.voz||!t)return;try{const s=window.speechSynthesis;if(!s)return;s.cancel();const u=new SpeechSynthesisUtterance(t);if(esVoice){u.voice=esVoice;u.lang=esVoice.lang;}else u.lang='es-CL';u.rate=CFG.rate||.95;u.pitch=1.05;s.speak(u);}catch(e){}}
+let AC=null;
+function tones(seq){if(!CFG.sonido)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();let t=AC.currentTime+.01;seq.forEach(([f,d])=>{const o=AC.createOscillator(),g=AC.createGain();o.type='sine';o.frequency.setValueAtTime(f,t);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.14,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+d+.02);t+=d*.8;});}catch(e){}}
+const sndOk=()=>tones([[660,.12],[880,.18]]);
+const sndBad=()=>tones([[330,.16]]);
+const sndEnd=()=>tones([[523,.14],[659,.14],[784,.14],[1047,.3]]);
+
+/* ============ generadores (por habilidad) ============ */
+function cant(lo,hi){const n=R(lo,hi);return{kind:'cant',n,answer:n};}
+function pickN(lo,hi){const t=R(lo,hi);const set=new Set([t]);let g=0;while(set.size<4&&g++<80){const d=R(1,Math.max(3,Math.min(10,hi-lo)));const v=Math.random()<.5?t-d:t+d;if(v>=Math.max(0,lo-2)&&v<=hi+2)set.add(v);}while(set.size<4)set.add(R(lo,hi+5));return{kind:'pick',t,opts:shuffle([...set]),answer:t};}
+function post(lo,hi){const a=R(lo,hi);return{kind:'post',a,answer:a+1};}
+function ant(lo,hi){const a=R(lo,hi);return{kind:'ant',a,answer:a-1};}
+function ord(lo,hi){const s=new Set();while(s.size<4)s.add(R(lo,hi));const nums=shuffle([...s]);return{kind:'ord',nums,answer:nums.slice().sort((x,y)=>x-y)};}
+function seq(lo,hi,st){const len=5;const maxStart=Math.floor((hi-st*(len-1))/st);const minStart=Math.ceil(lo/st);const s=R(minStart,Math.max(minStart,maxStart))*st;const nums=Array.from({length:len},(_,k)=>s+k*st);const miss=R(1,len-1);return{kind:'seq',nums,miss,st,answer:nums[miss]};}
+function hop(a,k,line){return{kind:'hop',a,k,line,answer:a+k};}
+function add(a,b){return{kind:'add',a,b,answer:a+b,fact:a+'+'+b};}
+function sub(a,b){return{kind:'sub',a,b,answer:a-b,fact:a+'-'+b};}
+function vert(a,b,op){return{kind:'v',a,b,op,answer:op==='+'?a+b:a-b};}
+const SK={
+  cant5:()=>cant(1,5), cant10:()=>cant(1,10), cant20:()=>cant(6,20),
+  rec10:()=>pickN(0,10), rec20:()=>pickN(11,20), rec100:()=>pickN(21,100),
+  post10:()=>post(0,9), post20:()=>post(9,19), post100:()=>post(20,99),
+  ant10:()=>ant(1,10), ant20:()=>ant(11,20), ant100:()=>ant(21,100),
+  ord10:()=>ord(0,10), ord100:()=>ord(10,100),
+  seq20:()=>seq(1,20,1), seq50:()=>seq(15,50,1), seq100:()=>seq(40,100,1),
+  seqStep:()=>seq(0,100,pickOne([2,5,10])),
+  hop1:()=>hop(R(0,15),1,true), hop2:()=>hop(R(0,14),2,true), rel12:()=>hop(R(1,18),R(1,2),false),
+  add3:()=>{const a=R(1,6),b=R(1,6),c=R(1,6);return{kind:'add3',a,b,c,answer:a+b+c};},
+  chain:()=>{const a=R(2,10),b=R(1,9),c=R(1,Math.min(9,a+b-1));return{kind:'chain',a,b,c,answer:a+b-c};},
+  'h2+':()=>{const a=R(10,89),b=R(2,9);return{kind:'h2',a,b,op:'+',answer:a+b};},
+  'h2-':()=>{const a=R(21,99),b=R(2,9);return{kind:'h2',a,b,op:MIN,answer:a-b};},
+  'v+nc':()=>{const au=R(0,8),bu=R(0,8-au),at=R(1,8),bt=R(1,9-at);return vert(at*10+au,bt*10+bu,'+');},
+  'v+c':()=>{const au=R(2,9),bu=R(10-au,9),at=R(1,8),bt=R(1,8);return vert(at*10+au,bt*10+bu,'+');},
+  'v+3':()=>vert(R(100,899),R(100,899),'+'),
+  'v+3nc':()=>{const h=R(1,8),hb=R(1,9-h),t=R(0,9),tb=R(0,9-t),u=R(0,9),ub=R(0,9-u);return vert(h*100+t*10+u,hb*100+tb*10+ub,'+');},
+  'v+3c':()=>{let a,b,g=0;do{a=R(100,899);b=R(100,899);g++;}while(g<50&&!((a%10+b%10)>=10||(Math.floor(a/10)%10+Math.floor(b/10)%10)>=10));return vert(a,b,'+');},
+  'v-nb':()=>{const at=R(2,9),au=R(1,9),bt=R(1,at-1),bu=R(0,au);return vert(at*10+au,bt*10+bu,MIN);},
+  'v-b':()=>{const at=R(3,9),au=R(0,8),bu=R(au+1,9),bt=R(1,at-1);return vert(at*10+au,bt*10+bu,MIN);},
+  'v-3':()=>{const a=R(300,999);return vert(a,R(100,a-100),MIN);},
+  'v-0':()=>{const h=R(3,9),u=R(0,9);return vert(h*100+u,R(1,h-1)*100+R(1,9)*10+R(0,9),MIN);}
+};
+for(let k=1;k<=10;k++)SK['add+'+k]=()=>add(R(1,10),k);
+for(let k=1;k<=9;k++)SK['sub-'+k]=()=>sub(R(k+1,k+10),k);
+function gen(skill){const it=SK[skill]();it.skill=skill;return it;}
+
+const LABELS={cant5:'Cantidades hasta 5',cant10:'Cantidades hasta 10',cant20:'Cantidades hasta 20',rec10:'Reconocer hasta 10',rec20:'Reconocer hasta 20',rec100:'Reconocer hasta 100',post10:'Siguiente hasta 10',post20:'Siguiente hasta 20',post100:'Siguiente hasta 100',ant10:'Anterior hasta 10',ant20:'Anterior hasta 20',ant100:'Anterior hasta 100',ord10:'Ordenar hasta 10',ord100:'Ordenar hasta 100',seq20:'Secuencias hasta 20',seq50:'Secuencias hasta 50',seq100:'Secuencias hasta 100',seqStep:'Conteo de 2, 5 y 10',hop1:'Salto +1 en recta',hop2:'Salto +2 en recta',rel12:'n → n+1, n+2',add3:'Tres sumandos',chain:'Operaciones encadenadas','h2+':'Dos cifras + una','h2-':'Dos cifras − una','v+nc':'Suma vertical sin reserva','v+c':'Suma vertical con reserva','v+3':'Suma vertical 3 cifras','v+3nc':'Suma vertical 3 cifras sin reserva','v+3c':'Suma vertical 3 cifras con reserva','v-nb':'Resta vertical sin canje','v-b':'Resta vertical con canje','v-3':'Resta vertical 3 cifras','v-0':'Resta con ceros'};
+const LABEL=s=>s.startsWith('add+')?'+'+s.slice(4):s.startsWith('sub-')?MIN+s.slice(4):(LABELS[s]||s);
+/* tiempo objetivo base por ejercicio (ms); referencias internas ajustables */
+function target(s){
+  if(/^cant/.test(s))return 6000; if(/^rec/.test(s))return 5000; if(/^(post|ant)/.test(s))return 4000;
+  if(/^ord/.test(s))return 10000; if(/^seq/.test(s))return 7000; if(/^(hop|rel)/.test(s))return 5000;
+  if(/^add\+/.test(s))return +s.slice(4)>=6?4000:3500; if(/^sub-/.test(s))return 4500;
+  if(s==='add3')return 6000; if(s==='chain')return 7000; if(/^h2/.test(s))return 6000;
+  if(s==='v+nc'||s==='v-nb')return 15000; if(s==='v+3nc')return 20000; if(s==='v+c'||s==='v-b')return 18000; if(s==='v-0')return 35000; return 25000;
+}
+/* se suma tiempo por cada dígito extra que hay que teclear */
+const KEYED=['cant','post','ant','seq','hop','add','sub','add3','chain','h2'];
+function itemTarget(it){let t=target(it.skill);if(KEYED.includes(it.kind))t+=(String(it.answer).length-1)*700;return t;}
+
+/* ============ mapa de aprendizaje ============ */
+const ETAPAS=[];const STEPS=[];
+function etapa(nombre,pasos){const e={n:ETAPAS.length+1,nombre,desde:STEPS.length};ETAPAS.push(e);pasos.forEach(p=>{p.etapa=e.n;p.idx=STEPS.length;STEPS.push(p);});e.hasta=STEPS.length-1;}
+const P=(titulo,skills,o)=>Object.assign({titulo,skills,mode:'mix',n:10,need:2},o||{});
+etapa('Números',[P('Cantidades hasta 5',['cant5']),P('Reconocer números hasta 10',['rec10']),P('Cantidades hasta 10',['cant10']),P('Número siguiente hasta 10',['post10']),P('Número anterior hasta 10',['ant10']),P('Ordenar números hasta 10',['ord10'])]);
+etapa('Secuencias ampliadas',[P('Cantidades hasta 20',['cant20']),P('Reconocer números hasta 20',['rec20']),P('Secuencias hasta 20',['seq20']),P('Siguiente y anterior hasta 20',['post20','ant20']),P('Secuencias hasta 50',['seq50']),P('Reconocer números hasta 100',['rec100']),P('Secuencias hasta 100',['seq100']),P('Siguiente y anterior hasta 100',['post100','ant100']),P('Ordenar números hasta 100',['ord100']),P('Contar de 2, 5 y 10 en 10',['seqStep'])]);
+etapa('Preparación para suma',[P('Saltos de 1 en la recta',['hop1'],{need:1}),P('Saltos de 2 en la recta',['hop2'],{need:1}),P('Saltos de 1 y 2 sin recta',['rel12'])]);
+for(let k=1;k<=10;k++){
+  const ps=[P('+'+k+' en orden',['add+'+k],{mode:'orden',n:15,need:1}),P('+'+k+' mezclado',['add+'+k],{n:15})];
+  if(k>1)ps.push(P('Repaso +1 a +'+k,Array.from({length:k},(_,i)=>'add+'+(i+1)),{n:15}));
+  etapa('Suma +'+k,ps);
+}
+etapa('Suma mental hasta 20',[P('Todas las sumas mezcladas',Array.from({length:10},(_,i)=>'add+'+(i+1)),{n:20}),P('Tres sumandos',['add3'],{n:12})]);
+etapa('Resta '+MIN+'1 a '+MIN+'3',[1,2,3].flatMap(k=>[P(MIN+k+' en orden',['sub-'+k],{mode:'orden',n:15,need:1}),P(MIN+k+' mezclado',['sub-'+k],{n:15})]).concat([P('Repaso '+MIN+'1 a '+MIN+'3',['sub-1','sub-2','sub-3'],{n:15})]));
+etapa('Resta mental hasta 20',[P(MIN+'4 y '+MIN+'5 mezclado',['sub-4','sub-5'],{n:15}),P(MIN+'6 a '+MIN+'9 mezclado',['sub-6','sub-7','sub-8','sub-9'],{n:15}),P('Todas las restas mezcladas',Array.from({length:9},(_,i)=>'sub-'+(i+1)),{n:20})]);
+etapa('Suma y resta',[P('Suma y resta mezcladas',['add+3','add+5','add+7','add+9','sub-2','sub-4','sub-6','sub-8'],{n:20}),P('Operaciones encadenadas',['chain'],{n:12})]);
+etapa('Números de dos cifras',[P('Dos cifras + una cifra',['h2+'],{n:12}),P('Dos cifras '+MIN+' una cifra',['h2-'],{n:12})]);
+etapa('Suma vertical',[P('Dos cifras sin reserva',['v+nc']),P('Dos cifras con reserva',['v+c']),P('Tres cifras sin reserva',['v+3nc']),P('Tres cifras con reserva',['v+3c'])]);
+etapa('Resta vertical',[P('Sin canje',['v-nb']),P('Con canje',['v-b']),P('Tres cifras',['v-3']),P('Con ceros',['v-0']),P('Suma y resta vertical',['v+3c','v-3'])]);
+const findStep=t=>STEPS.findIndex(s=>s.titulo===t);
+/* errores permitidos según el tamaño de la hoja: 10 % redondeado hacia abajo, mínimo 1 */
+const maxErr=n=>Math.max(1,Math.floor(n*.1));
+
+/* ============ diagnóstico adaptativo ============ */
+const PROBES=[
+  {skill:'cant5',inicio:0,que:'Asocia cantidades hasta 5'},
+  {skill:'rec10',inicio:1,que:'Reconoce números hasta 10'},
+  {skill:'cant10',inicio:2,que:'Asocia cantidades hasta 10'},
+  {skill:'post10',inicio:3,que:'Número siguiente hasta 10'},
+  {skill:'ant10',inicio:4,que:'Número anterior hasta 10'},
+  {skill:'seq20',inicio:7,que:'Secuencias hasta 20'},
+  {skill:'rec100',inicio:10,que:'Reconoce números hasta 100'},
+  {skill:'seq100',inicio:12,que:'Secuencias hasta 100'},
+  {skill:'add+1',inicio:findStep('Saltos de 1 y 2 sin recta'),que:'Suma +1'},
+  {skill:'add+2',inicio:findStep('+1 mezclado'),que:'Suma +2'},
+  {skill:'add+3',inicio:findStep('Repaso +1 a +2'),que:'Suma +3'},
+  {skill:'add+5',inicio:findStep('Repaso +1 a +4'),que:'Suma +5'},
+  {skill:'add+7',inicio:findStep('Repaso +1 a +6'),que:'Suma +7'},
+  {skill:'add+9',inicio:findStep('Repaso +1 a +8'),que:'Suma +9'},
+  {skill:'sub-2',inicio:findStep('Tres sumandos'),que:'Resta '+MIN+'2'},
+  {skill:'sub-5',inicio:findStep('Repaso '+MIN+'1 a '+MIN+'3'),que:'Resta '+MIN+'5'},
+  {skill:'sub-8',inicio:findStep(MIN+'4 y '+MIN+'5 mezclado'),que:'Resta '+MIN+'8'},
+  {skill:'h2+',inicio:findStep('Operaciones encadenadas'),que:'Dos cifras + una'},
+  {skill:'v+c',inicio:findStep('Dos cifras sin reserva'),que:'Suma vertical con reserva'},
+  {skill:'v-b',inicio:findStep('Sin canje'),que:'Resta vertical con canje'}
+];
+const PROBE_N=5, PROBE_PASS=4, PRACTICE_N=2;
+
+/* ============ estado y almacenamiento ============ */
+const S={bkMsg:'',screen:'inicio',adultTab:'resumen',profiles:[],activeId:null,run:null,last:null,confirmDel:false,sync:'Guardado en este dispositivo',editStep:null,newKid:false,voiceOk:null};
+const LS='laumat.v2';
+const db=null;
+function lsSet(){lsSetK(LS,{profiles:S.profiles.filter(p=>!p.semilla),activeId:S.activeId});}
+function persist(p){
+  p.semilla=false;lsSet();
+}
+function removeProfile(id){S.profiles=S.profiles.filter(p=>p.id!==id);lsSet();clearRun(id);}
+function syncLabel(){const el=document.getElementById('sync');if(el)el.textContent=S.sync;}
+const cur=()=>S.profiles.find(p=>p.id===S.activeId)||S.profiles[0];
+const runKey=id=>'laumat.run.'+id;
+function saveRun(){const r=S.run;if(!r)return;lsSetK(runKey(r.pid),{tipo:r.tipo,phase:r.phase,items:r.items,i:r.i,log:r.log,activeMs:r.activeMs,step:r.step,diag:r.diag,prevKind:null,fecha:Date.now()});}
+function loadRun(p){const x=lsGetK(runKey(p.id),null);if(!x||!x.items)return null;if(x.tipo==='hoja'&&x.step!==p.step)return null;if(Date.now()-(x.fecha||0)>3*864e5)return null;return x;}
+function clearRun(id){lsSetK(runKey(id),null);}
+
+function newProfile(nombre){return{tarea:{hojas:2,dias:[true,true,true,true,true,true,true],extra:true},id:uid(),nombre:nombre||'Nuevo alumno',creado:Date.now(),diag:null,step:0,streakPrec:0,streakDom:0,failStreak:0,skills:{},facts:{},patrones:{},sesiones:[]};}
+function norm(p){p.tarea=Object.assign({hojas:2,dias:[true,true,true,true,true,true,true],extra:true},p.tarea||{});p.skills=p.skills||{};p.facts=p.facts||{};p.patrones=p.patrones||{};p.sesiones=p.sesiones||[];['streakPrec','streakDom','failStreak','step'].forEach(k=>{if(typeof p[k]!=='number')p[k]=0;});if(p.step>=STEPS.length)p.step=STEPS.length-1;return p;}
+function seedProfile(){
+  const p=newProfile('Alumno de ejemplo');p.semilla=true;p.ejemplo=true;
+  const base=Date.now()-6*864e5;
+  p.diag={fecha:base,inicio:findStep('Repaso +1 a +2'),resultado:{max:'Suma +3',probes:[]},resumen:[['Número máximo que reconoce','100'],['Conteo y cantidades','Hasta 20, fluido'],['Secuencia numérica','Hasta 100'],['Suma básica','+1 a +3 fluido'],['Suma mental','En desarrollo'],['Resta','No evaluada'],['Velocidad','Dentro de lo esperado']]};
+  p.step=findStep('Repaso +1 a +4');p.streakPrec=1;
+  const mk=(d,stepT,a1,cor,ped,aut,rep,ritmo,dec)=>{const s=STEPS[findStep(stepT)];const n=s.n;return{id:uid(),fecha:base+d*864e5,step:s.idx,titulo:'Etapa '+s.etapa+' · '+s.titulo,tipo:'hoja',n,maxErr:maxErr(n),aciertos1:a1,errores:cor,correcciones:cor,ayudasPedidas:ped,ayudasAuto:aut,repetidos:rep,ritmo,medianaMs:ritmo*3500,tiempoMs:ritmo*3500*n*1.1,fase:'fluidez',decision:dec,ejemplo:true,lentas:[],patrones:{},proc:{}};};
+  p.sesiones=[mk(1,'Repaso +1 a +2',15,0,0,0,0,.78,'Dominado: avanza'),mk(2,'+3 en orden',14,1,0,0,0,.84,'Dominado: avanza'),mk(3,'+3 mezclado',12,3,1,1,0,1.15,'Sigue en precisión'),mk(4,'+3 mezclado',14,1,0,0,0,.93,'Dominado 1 de 2: repite para confirmar'),mk(5,'+3 mezclado',15,0,0,0,0,.9,'Dominado: avanza'),mk(5.1,'+4 en orden',14,1,0,0,0,.95,'Dominado: avanza')].reverse();
+  const s=(n,acc,med)=>({n,acc,ms:[med],med});
+  p.skills={'add+1':s(40,.98,2100),'add+2':s(38,.96,2400),'add+3':s(45,.9,3100),'add+4':s(28,.82,3900),seq100:s(6,1,5200),rec100:s(3,1,3000)};
+  p.facts={'8+4':{err:2,item:{kind:'add',a:8,b:4,answer:12,fact:'8+4',skill:'add+4'}},'7+4':{err:1,item:{kind:'add',a:7,b:4,answer:11,fact:'7+4',skill:'add+4'}}};
+  return p;
+}
+
+/* ============ modelo de habilidades ============ */
+function weakness(p,s){const k=p.skills[s];if(!k||k.n<4)return .6;return Math.max(0,.95-k.acc)*4+Math.max(0,k.med/target(s)-1);}
+function skillState(p,s){const k=p.skills[s];if(!k||k.n<3)return'none';if(k.acc<.85)return'prac';if(k.med>target(s))return'prec';return'flu';}
+function weightedPick(p,skills){const w=skills.map(s=>.3+weakness(p,s));let r=Math.random()*sum(w);for(let i=0;i<skills.length;i++){r-=w[i];if(r<=0)return skills[i];}return skills[skills.length-1];}
+function learned(p){const from=Math.max(0,p.step-12);const set=new Set();for(let i=from;i<p.step;i++)STEPS[i].skills.forEach(s=>set.add(s));STEPS[p.step].skills.forEach(s=>set.delete(s));return[...set];}
+function itemKey(it){switch(it.kind){case'add':case'sub':return it.fact;case'add3':return it.a+'+'+it.b+'+'+it.c;case'chain':return it.a+'+'+it.b+'-'+it.c;case'h2':return it.a+(it.op==='+'?'+':'-')+it.b;case'cant':return'cant:'+it.n;case'pick':return'pick:'+it.t;case'post':return'post:'+it.a;case'ant':return'ant:'+it.a;case'seq':return'seq:'+it.nums.join(',');case'hop':return'hop:'+it.a+'+'+it.k;case'v':return'v:'+it.a+(it.op==='+'?'+':'-')+it.b;}return null;}
+function skillOfFact(it){if(it.skill)return it.skill;if(it.kind==='add')return'add+'+it.b;if(it.kind==='sub')return'sub-'+it.b;return null;}
+function factItem(f){const it=JSON.parse(JSON.stringify(f.item));it.skill=skillOfFact(it);if(it.answer==null)it.answer=it.kind==='add'?it.a+it.b:it.a-it.b;if(!it.fact&&(it.kind==='add'||it.kind==='sub'))it.fact=it.a+(it.kind==='add'?'+':'-')+it.b;it.repaso=true;return it;}
+
+function buildSession(p){
+  const st=STEPS[p.step];const n=st.n;let items=[];
+  if(st.mode==='orden'){const s=st.skills[0];const k=+s.slice(4);
+    for(let i=0;i<n;i++){const b=(i%10)+1;const it=s.startsWith('add')?add(b,k):sub(b+k,k);it.skill=s;items.push(it);}return items;}
+  const pool=learned(p);
+  const revN=(pool.length&&p.step>=3)?Math.round(n*.25):0;
+  const eligible=new Set(st.skills.concat(pool));
+  const facts=Object.values(p.facts).filter(f=>f.err>0&&f.item&&eligible.has(skillOfFact(f.item))).sort((a,b)=>b.err-a.err).slice(0,3);
+  facts.forEach(f=>items.push(factItem(f)));
+  let guard=0;
+  while(items.length<n-revN&&guard++<500){const it=gen(weightedPick(p,st.skills));const last=items[items.length-1];if(last&&itemKey(last)===itemKey(it))continue;items.push(it);}
+  const rev=[];for(let i=0;i<revN;i++){const it=gen(weightedPick(p,pool));it.repaso=true;rev.push(it);}
+  items=shuffle(items);
+  rev.forEach(it=>items.splice(R(2,items.length),0,it));
+  return items.slice(0,n);
+}
+
+/* ============ procedimiento vertical y tipos de error ============ */
+function vertW(it){return Math.max(String(it.a).length,String(it.b).length)+(it.op==='+'?1:0);}
+const digs=(n,W)=>String(n).padStart(W,'0').split('').map(Number);
+function procedure(it){
+  const W=vertW(it);const A=digs(it.a,W),B=digs(it.b,W);const notes={},strike={},need=[];
+  if(it.op==='+'){let c=0;for(let j=W-1;j>=0;j--){const s=A[j]+B[j]+c;c=Math.floor(s/10);if(c&&j>0){notes[j-1]=String(c);need.push(j-1);}}}
+  else{const w=A.slice();for(let j=W-1;j>=0;j--){if(w[j]<B[j]){let k=j-1;while(k>0&&w[k]===0)k--;w[k]--;strike[k]=true;notes[k]=String(w[k]);for(let m=k+1;m<j;m++){w[m]=9;strike[m]=true;notes[m]='9';}w[j]+=10;notes[j]=String(w[j]);need.push(j);}}}
+  return{notes,strike,need};
+}
+const PATRON={reserva:'Olvidó sumar la reserva',columnas:'Escribió la suma completa de cada columna',invertida:'Restó el menor del mayor en cada columna',sinDescontar:'No descontó después de pedir prestado',calculo:'Error de cálculo en una columna'};
+const PISTA={reserva:'Si una columna suma 10 o más, anota el 1 arriba de la columna de la izquierda y súmalo.',columnas:'En cada columna va una sola cifra. Si suma 10 o más, el 1 va arriba, a la izquierda.',invertida:'Si arriba hay menos que abajo, pide prestado a la columna de la izquierda.',sinDescontar:'Cuando pides prestado, tacha el número de la izquierda y réstale 1.',calculo:'Revisa columna por columna, empezando por la derecha.'};
+function vPattern(it,v){
+  const W=vertW(it);const A=digs(it.a,W),B=digs(it.b,W);
+  if(it.op==='+'){const nc=+A.map((x,j)=>(x+B[j])%10).join('');if(v===nc&&nc!==it.answer)return'reserva';const full=+(A.map((x,j)=>x+B[j]).join('').replace(/^0+/,'')||'0');if(v===full&&full!==it.answer)return'columnas';}
+  else{const rev=+A.map((x,j)=>Math.abs(x-B[j])).join('');if(v===rev&&rev!==it.answer)return'invertida';const nd=+A.map((x,j)=>x<B[j]?x+10-B[j]:x-B[j]).join('');if(v===nd&&nd!==it.answer)return'sinDescontar';}
+  return'calculo';
+}
+
+/* ============ instrucciones habladas ============ */
+function instr(it){switch(it.kind){case'cant':return'¿Cuántos puntos hay?';case'pick':return'Toca el número '+palabra(it.t);case'post':return'¿Qué número viene después?';case'ant':return'¿Qué número va antes?';case'seq':return'¿Qué número falta?';case'ord':return'Toca los números de menor a mayor';case'hop':return'Salta '+it.k+'. ¿A qué número llegas?';case'add':case'add3':return'Suma';case'sub':return'Resta';case'chain':return'Resuelve de izquierda a derecha';case'h2':return it.op==='+'?'Suma':'Resta';case'v':return(it.op==='+'?'Suma':'Resta')+'. Empieza por la derecha';}return'';}
+function readout(it){const m=' más ',l=' menos ';switch(it.kind){case'add':return it.a+m+it.b;case'sub':return it.a+l+it.b;case'add3':return it.a+m+it.b+m+it.c;case'chain':return it.a+m+it.b+l+it.c;case'h2':case'v':return it.a+(it.op==='+'?m:l)+it.b;case'post':return'Después del '+it.a;case'ant':return'Antes del '+it.a;case'hop':return'Desde el '+it.a;}return'';}
+
+/* ============ ejecución ============ */
+function freshRun(tipo,p){return{tipo,pid:p.id,phase:null,items:[],i:0,log:[],input:'',notes:{},strike:{},focus:'ans',attempts:0,helpAsked:false,helpAuto:false,helpOn:false,pista:null,patron:null,reveal:false,placed:[],bad:null,fb:null,itemStart:0,firstMs:null,activeMs:0,resumeAt:Date.now(),paused:false,confirmDiscard:false,example:null,step:p.step,diag:null,prevKind:null};}
+function startRun(tipo){
+  const p=cur();
+  if(p.ejemplo){Object.assign(p,{ejemplo:false,diag:null,step:0,streakPrec:0,streakDom:0,failStreak:0,skills:{},facts:{},patrones:{},sesiones:[]});if(p.nombre==='Alumno de ejemplo')p.nombre='Alumno 1';tipo='diag';}
+  const r=freshRun(tipo,p);
+  if(tipo==='diag'){r.phase='practica';r.diag={pi:0,stride:2,results:{}};r.items=Array.from({length:PRACTICE_N},()=>gen('cant5'));}
+  else{r.items=buildSession(p);const st=STEPS[p.step];if(!p.sesiones.some(s=>s.step===p.step&&s.tipo==='hoja'&&!s.ejemplo))r.example=exampleFor(st);}
+  S.run=r;S.screen='run';
+  if(r.example){render();speak('Mira cómo se hace. Después toca: ahora tú.');return;}
+  if(tipo==='diag')speak('Primero practiquemos. Escribe el número y toca el botón verde.');
+  beginItem(true);render();
+}
+function resumeSaved(){const p=cur();const x=loadRun(p);if(!x)return startRun('hoja');const r=freshRun(x.tipo,p);Object.assign(r,{phase:x.phase,items:x.items,i:x.i,log:x.log,activeMs:x.activeMs||0,step:x.step,diag:x.diag});S.run=r;S.screen='run';beginItem(false);render();}
+function exampleFor(st){const s=st.skills[0];let it;if(st.mode==='orden'){const k=+s.slice(4);it=s.startsWith('add')?add(1,k):sub(1+k,k);it.skill=s;}else it=gen(s);return it;}
+function beginItem(quietFirst){const r=S.run;Object.assign(r,{input:'',notes:{},strike:{},focus:'ans',attempts:0,helpAsked:false,helpAuto:false,helpOn:false,pista:null,patron:null,reveal:false,placed:[],bad:null,fb:null,firstMs:null});r.itemStart=Date.now();
+  const it=r.items[r.i];if(!it)return;
+  if(it.kind==='pick'||r.prevKind!==it.kind){if(!(quietFirst&&r.tipo==='diag'&&r.phase==='practica'))speak(instr(it));}
+  r.prevKind=it.kind;saveRun();}
+function activeNow(r){return r.activeMs+(r.paused?0:Date.now()-r.resumeAt);}
+function pauseRun(){const r=S.run;if(!r||r.paused||r.example)return;r.activeMs+=Date.now()-r.resumeAt;r.pausedAt=Date.now();r.paused=true;r.confirmDiscard=false;saveRun();try{window.speechSynthesis&&speechSynthesis.cancel();}catch(e){}render();}
+function resumeRun(){const r=S.run;if(!r||!r.paused)return;const d=Date.now()-r.pausedAt;r.itemStart+=d;r.resumeAt=Date.now();r.paused=false;render();}
+
+const graded=r=>r.tipo==='hoja'||r.phase==='practica';
+function helpKind(it){if(['add','sub','post','ant','hop','seq'].includes(it.kind)){if(it.kind==='seq'&&it.nums[4]>40)return null;if((it.kind==='post'||it.kind==='ant')&&it.a>20)return null;if(it.kind==='hop'&&it.line)return null;return'recta';}if(it.kind==='v')return'ejemplo';return null;}
+
+function checkAnswer(val){
+  const r=S.run;const it=r.items[r.i];
+  if(r.firstMs==null)r.firstMs=Date.now()-r.itemStart;
+  const v=+val;const ok=v===it.answer;
+  if(!graded(r)){r.log.push({skill:it.skill,ok1:ok,ms:r.firstMs,tgt:itemTarget(it)});advance();return;}
+  if(ok){r.fb='ok';sndOk();render();setTimeout(()=>{if(S.run!==r)return;recordItem();advance();},420);return;}
+  r.attempts++;r.fb='bad';sndBad();r.input='';
+  if(it.kind==='v'&&r.attempts===1){const pt=vPattern(it,v);if(!r.patron)r.patron=pt;if(pt!=='calculo'){r.pista=PISTA[pt];r.helpAuto=true;speak(PISTA[pt]);}}
+  if(r.attempts===2&&helpKind(it)&&!r.helpOn){r.helpOn=true;r.helpAuto=true;if(helpKind(it)==='recta')speak('Mira la recta. Te puede ayudar.');}
+  if(r.attempts>=3){r.reveal=true;speak('La respuesta es '+it.answer+'. Escríbela.');}
+  render();setTimeout(()=>{if(S.run===r&&r.fb==='bad'){r.fb=null;render();}},420);
+}
+function recordItem(){const r=S.run;const it=r.items[r.i];
+  let proc=null;
+  if(it.kind==='v'&&r.attempts===0){const pr=procedure(it);if(pr.need.length){const marked=pr.need.some(j=>(r.notes[j]&&r.notes[j].length)||r.strike[j]||(it.op!=='+'&&Object.keys(r.strike).length));if(!marked)proc=it.op==='+'?'Reserva sin anotar':'Canje sin anotar';}}
+  const snap=JSON.parse(JSON.stringify(it));delete snap.repaso;
+  r.log.push({skill:it.skill,key:itemKey(it),item:snap,ok1:r.attempts===0,attempts:r.attempts,ms:r.firstMs,tgt:itemTarget(it),helpAsked:r.helpAsked,helpAuto:r.helpAuto&&!r.helpAsked,patron:r.patron,proc,repaso:!!it.repaso});}
+function advance(){const r=S.run;
+  if(r.tipo==='diag'){
+    if(r.phase==='practica'){r.i++;if(r.i>=r.items.length){r.phase='prueba';r.log=[];r.diag.pi=0;r.items=probeItems(0);r.i=0;speak('¡Muy bien! Ahora sigue tú solo.');}beginItem(false);render();return;}
+    r.i++;if(r.i>=r.items.length){if(diagStep())return;}
+    beginItem(false);render();return;}
+  r.i++;if(r.i>=r.items.length){finishSession();return;}beginItem(false);render();}
+
+/* diagnóstico: 5 ejercicios por prueba, aprueba con 4; salta de a 2 mientras hay fluidez;
+   termina al haber dos pruebas seguidas bajo el umbral, o tres en total */
+function probeItems(pi){return Array.from({length:PROBE_N},()=>gen(PROBES[pi].skill));}
+function diagStep(){
+  const r=S.run;const d=r.diag;const pi=d.pi;const chunk=r.log.slice(-PROBE_N);
+  const c=chunk.filter(x=>x.ok1).length;const ratio=median(chunk.map(x=>x.ms/x.tgt));const pass=c>=PROBE_PASS;const fluent=pass&&ratio<=1.6;
+  d.results[pi]={c,ms:median(chunk.map(x=>x.ms)),ratio,pass,fluent};
+  const res=d.results;
+  const consec=()=>{for(const k in res){const a=res[k],b=res[+k+1];if(b&&!a.pass&&!b.pass)return true;}return false;};
+  const fails=Object.values(res).filter(x=>!x.pass).length;
+  let next=null;
+  if(!consec()&&fails<3){
+    if(fluent)next=(d.stride===2)?pi+2:pi+1;
+    else if(pass){d.stride=1;next=pi+1;}
+    else{d.stride=1;next=(pi>0&&!res[pi-1])?pi-1:pi+1;}
+    if(next>=PROBES.length&&!res[PROBES.length-1]&&fluent&&d.stride===2)next=PROBES.length-1;
+    while(next!=null&&next<PROBES.length&&res[next])next++;
+    if(next!=null&&next>=PROBES.length)next=null;
+  }
+  if(next!=null){d.pi=next;r.items=probeItems(next);r.i=0;return false;}
+  finishDiag();return true;
+}
+function finishDiag(){
+  const r=S.run;const p=cur();const res=r.diag.results;
+  const tested=Object.keys(res).map(Number).sort((a,b)=>a-b);
+  let H=-1;for(let k=0;k<tested.length;k++){const i=tested[k];const a=res[i],b=res[tested[k+1]];if(a.fluent)H=i;if(!a.pass&&b&&!b.pass&&tested[k+1]===i+1)break;}
+  const inicio=H<0?0:PROBES[H].inicio;
+  const ok=i=>res[i]?res[i].pass:(i<H);
+  const est=i=>res[i]?(res[i].fluent?'Fluido':res[i].pass?'Correcto, aún lento':'Con dificultad'):(i<H?'Se dio por logrado (saltado)':'No evaluado');
+  const addOk=[8,9,10,11,12,13].filter(ok).map(i=>PROBES[i].que.replace('Suma ',''));
+  const subOk=[14,15,16].filter(ok).map(i=>PROBES[i].que.replace('Resta ',''));
+  const passed=tested.filter(i=>res[i].pass);
+  const resumen=[
+    ['Número máximo que reconoce',ok(6)?'100 o más':ok(1)?'Hasta 10 o 20':'Menos de 10'],
+    ['Conteo y cantidades',ok(2)?'Hasta 10':ok(0)?'Hasta 5':'En inicio'],
+    ['Secuencia numérica',ok(7)?'Hasta 100':ok(5)?'Hasta 20':ok(3)?'Hasta 10':'En inicio'],
+    ['Suma básica',addOk.length?addOk.join(', '):'Aún no'],
+    ['Suma mental',ok(12)?'Fluida hasta +7':ok(10)?'En desarrollo':'Inicial'],
+    ['Resta',subOk.length?subOk.join(', '):(ok(13)?'Aún no':'No evaluada')],
+    ['Velocidad',passed.length?(passed.every(i=>res[i].fluent)?'Dentro de lo esperado':'Más lenta de lo esperado en algunas pruebas'):'Sin datos suficientes']
+  ];
+  r.log.forEach(x=>updSkill(p,x.skill,x.ok1,x.ms));
+  p.diag={fecha:Date.now(),inicio,resultado:{max:H>=0?PROBES[H].que:'Ninguna prueba con fluidez',probes:tested.map(i=>({que:PROBES[i].que,c:res[i].c,n:PROBE_N,ms:Math.round(res[i].ms),estado:est(i)}))},resumen};
+  p.step=inicio;p.streakPrec=0;p.streakDom=0;p.failStreak=0;
+  p.sesiones.unshift({id:uid(),fecha:Date.now(),step:inicio,titulo:'Diagnóstico inicial',tipo:'diag',n:r.log.length,aciertos1:r.log.filter(x=>x.ok1).length,correcciones:0,ayudasPedidas:0,ayudasAuto:0,repetidos:0,ritmo:median(r.log.map(x=>x.ms/x.tgt)),medianaMs:median(r.log.map(x=>x.ms)),tiempoMs:activeNow(r),fase:'-',decision:'Comienza en: Etapa '+STEPS[inicio].etapa+' · '+STEPS[inicio].titulo,lentas:[],patrones:{},proc:{}});
+  persist(p);clearRun(p.id);
+  S.last={tipo:'diag'};S.run=null;S.screen='done';sndEnd();speak('¡Listo! Terminaste.');render();
+}
+function updSkill(p,s,ok,ms){const k=p.skills[s]||(p.skills[s]={n:0,acc:ok?1:0,ms:[],med:0});k.n++;k.acc=k.n===1?(ok?1:0):k.acc*.8+(ok?1:0)*.2;k.ms.push(Math.round(ms));if(k.ms.length>15)k.ms.shift();k.med=median(k.ms);}
+
+function finishSession(){
+  const r=S.run;const p=cur();const st=STEPS[p.step];const log=r.log;const n=log.length;const main=log.filter(x=>!x.repaso);
+  const a1=log.filter(x=>x.ok1).length;const fallos=n-a1;const mE=maxErr(n);
+  const errores=sum(log.map(x=>x.attempts));const correcciones=log.filter(x=>x.attempts>0).length;
+  const pedidas=log.filter(x=>x.helpAsked).length;const auto=log.filter(x=>x.helpAuto).length;
+  const patrones={},proc={};log.forEach(x=>{if(x.patron&&x.patron!=='calculo')patrones[x.patron]=(patrones[x.patron]||0)+1;if(x.proc)proc[x.proc]=(proc[x.proc]||0)+1;});
+  /* errores repetidos: misma combinación ya fallada antes, o mismo tipo de error vertical repetido */
+  let repetidos=0;const seenKey={},seenPat={};
+  log.forEach(x=>{if(x.attempts===0)return;let rep=false;const f=x.key&&p.facts[x.key];if((f&&f.err>0)||(x.key&&seenKey[x.key]))rep=true;if(x.patron&&x.patron!=='calculo'&&(seenPat[x.patron]||(p.patrones[x.patron]||0)>0))rep=true;if(rep)repetidos++;if(x.key)seenKey[x.key]=1;if(x.patron)seenPat[x.patron]=1;});
+  const ritmo=median(main.map(x=>x.ms/x.tgt));const sumMs=sum(main.map(x=>x.ms)),sumT=sum(main.map(x=>x.tgt));
+  const precisionOk=fallos<=mE&&pedidas<=1&&repetidos===0;
+  const speedOk=ritmo<=1&&sumMs<=sumT*1.4;
+  const fase=(p.streakPrec>=2||p.streakDom>=1)?'fluidez':'precisión';
+  /* actualizar modelo */
+  log.forEach(x=>{updSkill(p,x.skill,x.ok1,x.ms);if(!x.key)return;const f=p.facts[x.key]||(x.attempts>0?(p.facts[x.key]={err:0,item:x.item}):null);if(!f)return;if(x.attempts>0)f.err=Math.min(5,f.err+1);else f.err=Math.max(0,f.err-.5);if(f.err<=0)delete p.facts[x.key];});
+  const fk=Object.keys(p.facts);if(fk.length>150)fk.sort((a,b)=>p.facts[a].err-p.facts[b].err).slice(0,fk.length-150).forEach(k=>delete p.facts[k]);
+  if(log.some(x=>x.item&&x.item.kind==='v')){Object.keys(PATRON).forEach(k=>{if(patrones[k])p.patrones[k]=Math.min(5,(p.patrones[k]||0)+1);else if(p.patrones[k]){p.patrones[k]--;if(p.patrones[k]<=0)delete p.patrones[k];}});}
+  let decision;
+  if(precisionOk)p.streakPrec++;else p.streakPrec=0;
+  const dominated=precisionOk&&speedOk;
+  if(dominated)p.streakDom++;else p.streakDom=0;
+  if(a1/n<.7)p.failStreak++;else p.failStreak=0;
+  const prev=p.step;let avanzo=false,nuevaEtapa=false;
+  if(p.streakDom>=st.need){if(p.step<STEPS.length-1){p.step++;avanzo=true;nuevaEtapa=STEPS[p.step].etapa!==st.etapa;decision='Dominado: avanza';}else decision='Mapa completo';p.streakPrec=0;p.streakDom=0;p.failStreak=0;}
+  else if(p.failStreak>=3&&p.step>0){p.step--;decision='Retrocede un paso para afianzar';p.streakPrec=0;p.streakDom=0;p.failStreak=0;}
+  else if(dominated)decision='Dominado 1 de '+st.need+': repite para confirmar';
+  else if(fase==='fluidez'&&a1/n<.8){p.streakPrec=0;decision='Baja la precisión: vuelve a fase de precisión';}
+  else if(!precisionOk)decision='Sigue en precisión';
+  else if(p.streakPrec>=2)decision='Precisión lograda: ahora trabaja fluidez';
+  else decision='Precisión 1 de 2: repite';
+  const bySkill={};main.forEach(x=>{(bySkill[x.skill]=bySkill[x.skill]||[]).push(x.ms/x.tgt);});
+  const lentas=Object.entries(bySkill).filter(([,a])=>median(a)>1.2).map(([s])=>LABEL(s));
+  p.sesiones.unshift({id:uid(),fecha:Date.now(),step:prev,titulo:'Etapa '+st.etapa+' · '+st.titulo,tipo:'hoja',n,maxErr:mE,aciertos1:a1,errores,correcciones,ayudasPedidas:pedidas,ayudasAuto:auto,repetidos,ritmo,medianaMs:median(main.map(x=>x.ms)),tiempoMs:activeNow(r),fase,decision,lentas,patrones,proc,precisionOk,speedOk,extra:hechasDia(p)>=tareaHoy(p)});
+  if(p.sesiones.length>200)p.sesiones.length=200;
+  persist(p);clearRun(p.id);
+  const sellos=p.sesiones.filter(s=>s.tipo==='hoja'&&!s.ejemplo).length;
+  const due=tareaHoy(p),hechas=hechasDia(p);S.last={tipo:'hoja',n,a1,sellos,avanzo,nuevaEtapa,paso:p.step+1,due,hechas,extraOk:tareaDe(p).extra};S.run=null;S.screen='done';
+  sndEnd();const fin=due>0&&hechas===due?' ¡Terminaste la tarea de hoy!':(due>hechas?' Te queda '+(due-hechas===1?'una hoja':(due-hechas)+' hojas')+'.':'');speak((avanzo?(nuevaEtapa?'¡Excelente! Empiezas una etapa nueva.':'¡Muy bien! Subiste de paso.'):'¡Muy bien! Terminaste la hoja.')+fin);render();
+}
+
+/* ============ vistas ============ */
+const IC={
+  pause:'<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1.5"/><rect x="14" y="5" width="4" height="14" rx="1.5"/></svg>',
+  bulb:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V16h5v-.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"/></svg>',
+  sound:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg>',
+  back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>'
+};
+const HUES=[212,150,24,280,340,190,48];
+const avatarColor=p=>{let h=0;for(const c of p.id)h=(h*31+c.charCodeAt(0))>>>0;return'hsl('+HUES[h%HUES.length]+' 55% 46%)';};
+function topBar(left,right){return `<header class="top">${left||''}<div class="brand">Mat<span>Lau</span></div><div class="sp"></div>${right||''}</header>`;}
+function holdBtn(label,id){return `<button class="btn ghost hold" id="${id}" aria-label="${label} (mantén presionado)">${label}<i></i></button>`;}
+const hasDiag=p=>p.diag&&!p.ejemplo;
+const DIAS=['D','L','M','M','J','V','S'];
+const DIAS_L=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+const tareaDe=p=>p.tarea||{hojas:2,dias:[true,true,true,true,true,true,true],extra:true};
+const tareaHoy=(p,d)=>{const t=tareaDe(p);return t.dias[new Date(d||Date.now()).getDay()]?t.hojas:0;};
+const hechasDia=(p,d)=>p.sesiones.filter(s=>s.tipo==='hoja'&&(!s.ejemplo||p.ejemplo)&&dayKey(s.fecha)===dayKey(d||Date.now())).length;
+function tareaTexto(t){const n=t.dias.filter(Boolean).length;const d=n===7?'todos los días':n===5&&t.dias.slice(1,6).every(Boolean)?'de lunes a viernes':t.dias.map((x,i)=>x?DIAS_L[i]:null).filter(Boolean).join(', ');return t.hojas+' '+(t.hojas===1?'hoja':'hojas')+', '+(n?d:'sin días asignados');}
+
+function viewInicio(){
+  const cards=S.profiles.map(p=>`<button class="kidcard" data-pick="${p.id}"><span class="avatar" style="background:${avatarColor(p)}">${esc((p.nombre.trim()[0]||'?').toUpperCase())}</span><b>${esc(p.nombre)}</b><small>${p.ejemplo?'Ejemplo':hasDiag(p)?'Paso '+(p.step+1):'Diagnóstico pendiente'}</small></button>`).join('');
+  const form=S.newKid?`<form class="newkid" id="newKidForm"><label class="f" for="kidName">Nombre del alumno<input type="text" id="kidName" maxlength="40" autocomplete="off" placeholder="Ej.: Tomás"></label><div class="row"><button class="btn pri" type="submit">Crear</button><button class="btn" type="button" id="newKidCancel">Cancelar</button></div></form>`:'';
+  return `<main class="inicio"><div class="brand">Mat<span>Lau</span></div><div class="tag">Práctica diaria de matemáticas</div><h2>¿Quién va a practicar?</h2><div class="kids">${cards}<button class="kidcard add" id="newKid"><span class="avatar">+</span><b>Agregar</b><small>Nuevo alumno</small></button></div>${form}<div class="adultrow">${holdBtn('Panel del adulto','goAdult')}<span>Mantén presionado para entrar</span></div><span class="sync" id="sync">${esc(S.sync)}</span></main>`;
+}
+function viewKid(){
+  const p=cur();const st=STEPS[p.step];const et=ETAPAS[st.etapa-1];
+  const hojas=p.sesiones.filter(s=>s.tipo==='hoja'&&!s.ejemplo);
+  const todayN=hojas.filter(s=>dayKey(s.fecha)===dayKey(Date.now())).length;
+  const saved=loadRun(p);
+  const back=`<button class="icon" id="toInicio" aria-label="Volver al inicio">${IC.back}</button>`;
+  let body;
+  if(!hasDiag(p))body=`<div class="bigcard"><span class="diagtag">Diagnóstico inicial</span><div class="sub">Hola, ${esc(p.nombre)}</div><div class="paso" style="font-size:2.4rem">Vamos a jugar</div><div class="sub">Unos ejercicios cortos para saber por dónde partir. Hoy esta es tu tarea.</div>${saved&&saved.tipo==='diag'?`<button class="go" id="goResume">Continuar</button>`:`<button class="go" id="goDiag">Empezar</button>`}</div>`;
+  else{
+    const camino=STEPS.slice(et.desde,et.hasta+1).map(s=>`<i class="${s.idx<p.step?'d':s.idx===p.step?'c':''}">${s.idx<p.step?'✓':''}</i>`).join('');
+    const due=tareaHoy(p);const t=tareaDe(p);const lista=due>0&&todayN>=due;
+    const tareaHTML=due>0?`<div class="tarea"><div class="t">${lista?'':'Tarea de hoy'}</div>${lista?'<div class="lista">¡Tarea de hoy lista!</div>':''}<div class="boxes" aria-label="Hojas de hoy: ${Math.min(todayN,due)} de ${due}">${Array.from({length:due},(_,i)=>`<b class="${i<todayN?'d':''}">${i<todayN?'✓':''}</b>`).join('')}</div></div>`:`<div class="tarea"><div class="t">Hoy es día de descanso</div></div>`;
+    let btns;
+    if(saved)btns=`<button class="go" id="goResume">Continuar</button><button class="btn ghost" id="goRun">Empezar una hoja nueva</button>`;
+    else if(!lista&&due>0)btns=`<button class="go" id="goRun">${todayN?'Siguiente hoja':'Empezar'}</button>`;
+    else if(t.extra)btns=`<button class="btn ghost" id="goRun">Hacer una hoja extra</button>`;
+    else btns=`<div class="sub">Nos vemos mañana.</div>`;
+    body=`<div class="bigcard"><div class="sub">Hola, ${esc(p.nombre)}</div><div class="paso tnum">Paso ${p.step+1}</div><div class="camino" aria-label="Camino de esta etapa">${camino}</div>${tareaHTML}${btns}<div class="sellos"><span class="mini-stamp"></span><span class="tnum">${hojas.length} ${hojas.length===1?'sello':'sellos'}</span></div></div>`;
+  }
+  return topBar(back,`<span class="sync" id="sync">${esc(S.sync)}</span>${holdBtn('Adulto','goAdult')}`)+`<main class="kid">${body}</main>`;
+}
+function viewRun(){
+  const r=S.run;
+  if(r.paused)return `<div class="ex"><div></div><div class="stage"><div class="pausecard"><h2>En pausa</h2><p class="muted" style="margin:0">Tu hoja queda guardada.</p><div class="btns"><button class="go" id="resume">Seguir</button><button class="btn" id="saveExit">Guardar y salir</button>${r.confirmDiscard?`<div class="confirm"><span>¿Borrar esta hoja?</span><button class="btn danger" id="discardYes">Borrar</button><button class="btn" id="discardNo">No</button></div>`:`<button class="btn ghost" id="discard">Borrar hoja</button>`}</div></div></div><div></div></div>`;
+  if(r.example)return `<div class="ex">${exBar(true)}<div class="stage"><div class="example"><div class="instr"><span class="tag">Mira</span><button class="icon" id="say" aria-label="Escuchar">${IC.sound}</button></div>${exerciseHTML(r.example,true)}</div><button class="go" id="exGo">Ahora tú</button></div><div></div></div>`;
+  const it=r.items[r.i];const tap=it.kind==='pick'||it.kind==='ord';
+  const cls=r.fb==='ok'?'ok-flash':r.fb==='bad'?'shake':'';
+  const practice=r.tipo==='diag'&&r.phase==='practica'?'<div class="pista">Práctica: esta no cuenta.</div>':'';
+  return `<div class="ex">${exBar(false)}<div class="stage ${cls}" id="stage">${practice}<div class="instr"><span>${esc(instr(it))}</span><button class="icon" id="say" aria-label="Escuchar la instrucción">${IC.sound}</button></div>${exerciseHTML(it,false)}${r.pista?`<div class="pista">${esc(r.pista)}</div>`:''}${r.helpOn?helpHTML(it):''}</div>${tap?'<div></div>':keypad()}</div>`;
+}
+function exBar(isEx){const r=S.run;const n=r.tipo==='diag'?0:r.items.length;
+  const dots=n?Array.from({length:n},(_,i)=>`<b class="${i<r.i?'d':i===r.i&&!isEx?'c':''}"></b>`).join(''):'';
+  const it=!isEx&&r.items[r.i];const canHelp=it&&graded(r)&&helpKind(it)&&!r.helpOn;
+  return `<div class="exbar"><button class="icon" id="pause" aria-label="Pausa">${IC.pause}</button>${r.tipo==='diag'?`<div class="exlabel">Diagnóstico inicial${r.phase==='practica'?' · práctica':''}</div>`:`<div class="dots" aria-label="Avance">${dots}</div>`}${canHelp?`<button class="icon help" id="help" aria-label="Pedir ayuda">${IC.bulb}</button>`:''}</div>`;}
+function frames(n){const k=Math.max(1,Math.ceil(n/10));let h='<div class="frames" aria-label="'+n+' puntos">';for(let f=0;f<k;f++){h+='<div class="frame">';for(let j=0;j<10;j++)h+=`<i class="${f*10+j<n?'f':''}"></i>`;h+='</div>';}return h+'</div>';}
+function ansBox(r,it,sv){if(sv)return `<span class="ans">${it.answer}</span>`;const v=r.input;if(!v&&r.reveal)return `<span class="ans ghost">${it.answer}</span>`;return `<span class="ans ${v?'':'empty'}">${esc(v)}</span>`;}
+function exerciseHTML(it,sv){
+  const r=S.run;const box=ansBox(r,it,sv);
+  switch(it.kind){
+    case'cant':return `${frames(it.n)}<div class="q">${box}</div>`;
+    case'pick':return `<div class="word">${esc(palabra(it.t))}</div><div class="opts">${it.opts.map(v=>`<button class="opt ${(sv||r.reveal)&&v===it.t?'done':''} ${!sv&&r.bad===v?'bad':''}" data-opt="${v}" ${sv?'disabled':''}>${v}</button>`).join('')}</div>`;
+    case'ord':{const placed=sv?it.answer:r.placed;const hint=!sv&&r.reveal?it.answer[placed.length]:null;return `<div class="slots">${it.answer.map((_,k)=>`<div class="slot ${placed[k]!=null?'f':''}">${placed[k]!=null?placed[k]:''}</div>`).join('')}</div><div class="opts">${it.nums.map(v=>`<button class="opt ${placed.includes(v)||v===hint?'done':''} ${!sv&&r.bad===v?'bad':''}" data-ord="${v}" ${placed.includes(v)||sv?'disabled':''}>${v}</button>`).join('')}</div>`;}
+    case'post':return `<div class="q"><span>${it.a}</span><span class="arrow">→</span>${box}</div>`;
+    case'ant':return `<div class="q">${box}<span class="arrow">→</span><span>${it.a}</span></div>`;
+    case'seq':return `<div class="seq">${it.nums.map((v,k)=>k===it.miss?box:`<span>${v}</span>`).join('')}</div>`;
+    case'hop':return `${it.line?lineSVG(Math.max(0,it.a-2),Math.max(0,it.a-2)+10,it.a,it.k):''}<div class="q"><span>${it.a}</span><span class="arrow"><small>+${it.k}</small>→</span>${box}</div>`;
+    case'add':return `<div class="q"><span>${it.a}</span><span>+</span><span>${it.b}</span><span>=</span>${box}</div>`;
+    case'sub':return `<div class="q"><span>${it.a}</span><span>${MIN}</span><span>${it.b}</span><span>=</span>${box}</div>`;
+    case'add3':return `<div class="q"><span>${it.a}</span><span>+</span><span>${it.b}</span><span>+</span><span>${it.c}</span><span>=</span>${box}</div>`;
+    case'chain':return `<div class="q"><span>${it.a}</span><span>+</span><span>${it.b}</span><span>${MIN}</span><span>${it.c}</span><span>=</span>${box}</div>`;
+    case'h2':return `<div class="q"><span>${it.a}</span><span>${it.op}</span><span>${it.b}</span><span>=</span>${box}</div>`;
+    case'v':return vertHTML(it,sv);
+  }
+  return'';
+}
+function vertHTML(it,sv){
+  const r=S.run;const W=vertW(it);const minus=it.op!=='+';
+  const A=String(it.a).padStart(W,' '),B=String(it.b).padStart(W,' ');
+  const pr=sv?procedure(it):null;const notes=sv?pr.notes:r.notes;const strike=sv?pr.strike:r.strike;
+  const val=sv?String(it.answer):(r.input||(r.reveal?String(it.answer):''));
+  let h=`<div class="vert ${!sv&&r.fb==='bad'?'bad':''} ${!sv&&r.fb==='ok'?'good':''}" style="grid-template-columns:.7em repeat(${W},1.05em)" role="group" aria-label="${it.a} ${minus?'menos':'más'} ${it.b}">`;
+  h+='<span></span>';
+  for(let j=0;j<W;j++){const allow=minus?A[j]!==' ':j<W-1;if(!allow){h+='<span></span>';continue;}const c=notes[j];
+    if(sv)h+=`<span class="note sv ${minus?'w2':''}">${c!=null?c:''}</span>`;
+    else h+=`<button class="note ${minus?'w2':''} ${r.focus==='n'+j?'f':''}" data-note="${j}" aria-label="Anotación de la columna">${c!=null?esc(c):''}</button>`;}
+  h+='<span></span>';
+  [...A].forEach((ch,j)=>{if(ch===' '){h+='<span class="c"></span>';return;}if(minus&&!sv)h+=`<button class="top c ${strike[j]?'x':''}" data-strike="${j}" aria-label="Tachar ${ch}">${ch}</button>`;else h+=`<span class="c ${strike[j]?'x':''}">${ch}</span>`;});
+  h+=`<span class="c">${it.op}</span>`+[...B].map(ch=>`<span class="c">${ch.trim()}</span>`).join('');
+  h+='<span class="rule"></span><span></span>';
+  const curIdx=W-1-val.length;
+  for(let j=0;j<W;j++){const ch=val[val.length-(W-j)];const on=!sv&&r.focus==='ans'&&j===curIdx;h+=`<span class="cell ${on?'cur':''}" ${sv?'':'data-vans="1"'}>${ch!=null?ch:''}</span>`;}
+  return h+'</div>';
+}
+function lineSVG(from,to,mark,k){
+  const step=34,pad=22,w=(to-from)*step+pad*2,h=k?86:58,y=h-30;
+  let s=`<div class="linewrap"><svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" role="img" aria-label="Recta numérica">`;
+  s+=`<line x1="${pad-10}" y1="${y}" x2="${w-pad+10}" y2="${y}" stroke="var(--ink-2)" stroke-width="2"/>`;
+  for(let v=from;v<=to;v++){const x=pad+(v-from)*step;const on=v===mark;s+=`<line x1="${x}" y1="${y-7}" x2="${x}" y2="${y+7}" stroke="var(--ink-2)" stroke-width="2"/>`;
+    if(on)s+=`<circle cx="${x}" cy="${y}" r="9" fill="var(--accent)"/>`;
+    s+=`<text x="${x}" y="${y+24}" text-anchor="middle" font-size="15" font-weight="${on?700:400}" fill="${on?'var(--accent)':'var(--ink)'}" font-family="Andika,Verdana,sans-serif">${v}</text>`;}
+  if(k){for(let j=0;j<k;j++){const x1=pad+(mark+j-from)*step,x2=x1+step;s+=`<path d="M${x1} ${y-10} Q ${(x1+x2)/2} ${y-44} ${x2} ${y-10}" fill="none" stroke="var(--warn)" stroke-width="2.5"/><path d="M${x2-6} ${y-17} L${x2} ${y-10} L${x2-8} ${y-8}" fill="none" stroke="var(--warn)" stroke-width="2.5"/>`;}}
+  return s+'</svg></div>';
+}
+function helpHTML(it){
+  if(helpKind(it)==='ejemplo'){const ex=gen(it.skill);return `<div class="example" style="padding:14px"><div class="tag">Así se hace</div>${vertHTML(ex,true)}</div>`;}
+  let from=0,to=10,mark=null;
+  if(it.kind==='add'){mark=it.a;to=Math.max(10,Math.min(20,it.a+it.b+1));}
+  else if(it.kind==='sub'){mark=it.a;to=Math.max(10,Math.min(20,it.a+1));}
+  else if(it.kind==='post'||it.kind==='ant'){mark=it.a;to=Math.max(10,Math.min(20,it.a+2));}
+  else if(it.kind==='hop'){mark=it.a;from=Math.max(0,it.a-2);to=from+10;}
+  else if(it.kind==='seq'){from=it.nums[0];to=it.nums[4];}
+  if(to-from>20)from=to-20;
+  return lineSVG(from,to,mark,0);
+}
+function keypad(){return `<div class="pad" role="group" aria-label="Teclado">${[1,2,3,4,5,6,7,8,9].map(d=>`<button data-k="${d}">${d}</button>`).join('')}<button class="del" data-k="del" aria-label="Borrar">⌫</button><button data-k="0">0</button><button class="okk" data-k="ok" aria-label="Listo">✓</button></div>`;}
+function viewDone(){
+  const L=S.last||{};
+  const main=L.tipo==='diag'?'<span class="diagtag">Diagnóstico inicial terminado</span><h2>¡Listo! Ya sabemos por dónde partir.</h2>':`<h2>${L.a1} de ${L.n} a la primera</h2>${L.avanzo?`<div class="newstep">${L.nuevaEtapa?'¡Etapa nueva!':'¡Subiste al paso '+L.paso+'!'}</div>`:''}<div class="sellos"><span class="mini-stamp"></span><span class="tnum">${L.sellos} ${L.sellos===1?'sello':'sellos'}</span></div>`;
+  let tarea='',btn=`<button class="go" id="goHome">Volver</button>`;
+  if(L.tipo==='hoja'&&L.due>0){if(L.hechas===L.due)tarea='<div class="lista">¡Terminaste la tarea de hoy!</div>';else if(L.hechas<L.due){tarea=`<div class="sub muted">Te ${L.due-L.hechas===1?'queda 1 hoja':'quedan '+(L.due-L.hechas)+' hojas'} de la tarea de hoy</div>`;btn=`<button class="go" id="goNext">Siguiente hoja</button><button class="btn ghost" id="goHome">Descansar un poco</button>`;}}
+  return topBar('',holdBtn('Adulto','goAdult'))+`<main class="done"><div class="stamp">¡Hecho!</div>${main}${tarea}${btn}</main>`;
+}
+
+/* ============ panel del adulto ============ */
+function viewAdult(){
+  const p=cur();
+  const tabs=[['resumen','Resumen'],['habilidades','Habilidades'],['sesiones','Sesiones'],['diag','Diagnóstico'],['mapa','Mapa'],['ajustes','Ajustes']];
+  const banner=p.ejemplo?`<div class="banner"><span>Estás viendo <b>datos de ejemplo</b> para mostrar cómo se ve el seguimiento. Se borran al hacer el primer diagnóstico.</span><button class="btn" id="clearEx">Empezar con un alumno real</button></div>`:'';
+  const voiceWarn=CFG.voz&&S.voiceOk===false?`<div class="warnbar">Este dispositivo no tiene una voz en español instalada. El niño va a necesitar que alguien le lea las instrucciones, o puede instalar una voz en español en los ajustes del sistema.</div>`:'';
+  const profs=`<div class="row" style="margin-bottom:12px">${S.profiles.map(q=>`<button class="chip ${q.id===p.id?'on':''}" data-prof="${q.id}">${esc(q.nombre)}</button>`).join('')}<button class="chip" id="addProf">+ Alumno</button></div>`;
+  const body={resumen:adResumen,habilidades:adSkills,sesiones:adSesiones,diag:adDiag,mapa:adMapa,ajustes:adAjustes}[S.adultTab](p);
+  return topBar('',`<span class="sync" id="sync">${esc(S.sync)}</span><button class="btn" id="goInicio">Inicio</button><button class="btn pri" id="goKid">Ir a practicar</button>`)+voiceWarn+banner+profs+`<nav class="tabs">${tabs.map(([k,l])=>`<button class="${S.adultTab===k?'on':''}" data-tab="${k}">${l}</button>`).join('')}</nav>`+body+`<p class="foot">MatLau usa contenido y niveles propios, inspirados en principios de aprendizaje individualizado y progresivo. Los tiempos objetivo son referencias internas ajustables, no normas oficiales. No recolecta datos personales ni muestra publicidad: todo queda en este dispositivo.</p>`;
+}
+const fmtPat=o=>Object.entries(o||{}).map(([k,v])=>(PATRON[k]||k)+(v>1?' ('+v+')':'')).join('; ');
+const fmtProc=o=>Object.entries(o||{}).map(([k,v])=>k+(v>1?' ('+v+')':'')).join('; ');
+function adResumen(p){
+  const st=STEPS[p.step];const et=ETAPAS[st.etapa-1];
+  const hojas=p.sesiones.filter(s=>s.tipo==='hoja');const last=hojas[0];
+  const fase=(p.streakPrec>=2||p.streakDom>=1)?'fluidez':'precisión';
+  const week=hojas.filter(s=>Date.now()-s.fecha<7*864e5).length;
+  const days=new Set(hojas.map(s=>dayKey(s.fecha)));let streak=0;const d=new Date();if(!days.has(dayKey(d)))d.setDate(d.getDate()-1);while(days.has(dayKey(d))){streak++;d.setDate(d.getDate()-1);}
+  const ck=(c,t)=>`<li class="${c==null?'s':c?'y':'n'}"><b>${c==null?'·':c?'✓':'✗'}</b><span>${t}</span></li>`;
+  let lastBox='<p class="muted">Todavía no hay hojas.</p>';
+  if(last){const mE=last.maxErr||maxErr(last.n);lastBox=`<ul class="checks">
+    ${ck(last.n-last.aciertos1<=mE,`Correctas a la primera: ${last.aciertos1} de ${last.n} (se aceptan hasta ${mE} ${mE===1?'fallo':'fallos'})`)}
+    ${ck((last.ayudasPedidas||0)<=1,`Ayudas pedidas: ${last.ayudasPedidas||0} (máximo 1)`)}
+    ${ck(null,`Ayudas automáticas: ${last.ayudasAuto||0} (no se descuentan)`)}
+    ${ck(last.repetidos===0,`Errores repetidos: ${last.repetidos}`)}
+    ${ck(last.fase==='fluidez'?last.ritmo<=1:null,`Ritmo: ${fmtR(last.ritmo)} del tiempo objetivo (1,00 = justo en el objetivo)${last.fase==='fluidez'?'':' · aún no se exige'}`)}
+    ${ck(null,`Correcciones: ${last.correcciones} · tiempo activo: ${fmtS(last.tiempoMs)}`)}
+    ${last.patrones&&Object.keys(last.patrones).length?ck(false,'Tipo de error: '+esc(fmtPat(last.patrones))):''}
+    ${last.proc&&Object.keys(last.proc).length?ck(null,'Procedimiento: '+esc(fmtProc(last.proc))+'. No se descuenta; conviene revisarlo con el niño.'):''}
+  </ul><div><span class="pill p-acc">${esc(last.decision)}</span></div>`;}
+  const weak=learned(p).concat(st.skills).map(s=>({s,w:weakness(p,s),k:p.skills[s]})).filter(x=>x.k&&x.k.n>=3&&x.w>.15).sort((a,b)=>b.w-a.w).slice(0,4);
+  const showKey=k=>k.replace(/^v:/,'').replace(/-/g,' '+MIN+' ').replace(/\+/g,' + ').replace(/^(cant|pick|post|ant|seq|hop):/,(m,a)=>({cant:'Cantidad ',pick:'Reconocer ',post:'Después de ',ant:'Antes de ',seq:'Serie ',hop:'Salto '})[a]);
+  const facts=Object.entries(p.facts).sort((a,b)=>b[1].err-a[1].err).slice(0,6);
+  const pats=Object.keys(p.patrones);
+  const diagPend=!hasDiag(p)&&!p.ejemplo?`<section class="card" style="border-color:var(--warn)"><h3>Diagnóstico inicial pendiente</h3><p style="margin:0">Antes de la primera hoja, ${esc(p.nombre)} hace un diagnóstico corto que define su punto de partida. Aparece solo al tocar <b>Empezar</b> en su pantalla, o puede iniciarlo aquí.</p><div><button class="btn pri" id="runDiag">Hacer diagnóstico ahora</button></div></section>`:'';
+  return `<div class="grid2">${diagPend}
+   <section class="card"><h3>Punto actual</h3><dl class="kv"><dt>Etapa</dt><dd>${et.n}. ${esc(et.nombre)}</dd><dt>Paso</dt><dd>${p.step+1} de ${STEPS.length} · ${esc(st.titulo)}</dd><dt>Fase</dt><dd><span class="pill ${fase==='fluidez'?'p-ok':'p-warn'}">${fase==='fluidez'?'Fluidez':'Precisión'}</span></dd><dt>Para avanzar</dt><dd>${st.need===1?'1 hoja':'2 hojas seguidas'} con precisión y ritmo (${Math.min(p.streakDom,st.need)} de ${st.need})</dd><dt>Esta semana</dt><dd>${week} hojas · ${streak} ${streak===1?'día seguido':'días seguidos'}</dd></dl></section>
+   <section class="card"><h3>Última hoja</h3>${last?`<p class="muted" style="margin:0">${esc(last.titulo)} · ${fmtDate(last.fecha)}</p>`:''}${lastBox}</section>
+   <section class="card"><h3>Qué refuerza la próxima hoja</h3>${weak.length||facts.length||pats.length?`${weak.length?`<p style="margin:0">Más frecuencia en: ${weak.map(x=>`<span class="pill p-red">${esc(LABEL(x.s))}</span>`).join(' ')}</p>`:''}${facts.length?`<p style="margin:0">Vuelven a aparecer: ${facts.map(([f])=>`<span class="pill p-warn tnum">${esc(showKey(f))}</span>`).join(' ')}</p>`:''}${pats.length?`<p style="margin:0">Tipo de error a vigilar: ${esc(pats.map(k=>PATRON[k]).join('; '))}</p>`:''}<p class="muted" style="margin:0;font-size:.9rem">El resto de las habilidades sigue apareciendo, con menos frecuencia.</p>`:'<p class="muted" style="margin:0">Sin debilidades detectadas por ahora.</p>'}</section>
+   ${tareaCard(p)}
+   <section class="card"><h3>Cómo acompañar</h3><ul class="checks" style="font-size:.93rem"><li class="s"><b>·</b><span>Que la tarea sea a la misma hora cada día. Las hojas son cortas a propósito: mejor poco y diario que mucho de una vez.</span></li><li class="s"><b>·</b><span>No explique antes: el ejemplo inicial y la voz bastan. Si se traba, la app ofrece ayuda.</span></li><li class="s"><b>·</b><span>Al comienzo cuenta la exactitud; el ritmo se pide solo cuando ya es preciso.</span></li><li class="s"><b>·</b><span>Complemente con escritura de números a mano: el teclado no reemplaza el trazo.</span></li><li class="s"><b>·</b><span>Repetir un paso es normal: el avance depende del dominio, no de la edad ni del curso.</span></li></ul></section>
+  </div>`;
+}
+function tareaCard(p){
+  const t=tareaDe(p);const cells=[];let asig=0,cumpl=0;
+  for(let k=13;k>=0;k--){const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-k);const due=tareaHoy(p,d);const h=hechasDia(p,d);const hoy=k===0;
+    let c='off',tip=DIAS_L[d.getDay()]+' '+d.getDate()+': descanso';
+    if(due>0){c=h>=due?'ok':h>0?'par':(hoy?'':'no');tip=DIAS_L[d.getDay()]+' '+d.getDate()+': '+h+' de '+due;if(!hoy||h>=due){asig++;if(h>=due)cumpl++;}}
+    else if(h>0){c='ok';tip=DIAS_L[d.getDay()]+' '+d.getDate()+': '+h+' extra';}
+    cells.push(`<i class="${c} ${hoy?'hoy':''}" title="${tip}">${DIAS[d.getDay()]}</i>`);}
+  const hoyDue=tareaHoy(p),hoyH=hechasDia(p);
+  return `<section class="card"><h3>Tarea diaria</h3><dl class="kv"><dt>Asignada</dt><dd>${esc(tareaTexto(t))}</dd><dt>Hoy</dt><dd>${hoyDue?Math.min(hoyH,hoyDue)+' de '+hoyDue+(hoyH>hoyDue?' (+'+(hoyH-hoyDue)+' extra)':''):'Descanso'+(hoyH?' ('+hoyH+' extra)':'')}</dd><dt>Últimos 14 días</dt><dd>${asig?cumpl+' de '+asig+' días cumplidos':'Sin días asignados todavía'}</dd></dl><div class="strip" aria-label="Cumplimiento de los últimos 14 días">${cells.join('')}</div><div class="legend"><span><i style="background:var(--ok)"></i>Cumplida</span><span><i style="background:var(--warn-soft)"></i>Parcial</span><span><i style="background:var(--red-soft)"></i>No hecha</span><span><i style="border:1.5px dashed var(--line)"></i>Descanso</span></div><div><button class="btn ghost" data-tab="ajustes">Cambiar tarea</button></div></section>`;
+}
+function skillCell(p,s,lab){const st=skillState(p,s);const k=p.skills[s];return `<div class="sk ${st}" title="${esc(LABEL(s))}${k?': '+pct(k.acc)+' · '+fmtSec(k.med):''}">${lab}<small>${k&&k.n>=3?pct(k.acc):'—'}</small></div>`;}
+function adSkills(p){
+  const legend=`<div class="legend"><span><i style="background:var(--red-soft)"></i>En práctica (menos de 85 %)</span><span><i style="background:var(--warn-soft)"></i>Preciso, aún lento</span><span><i style="background:var(--ok-soft)"></i>Fluido</span><span><i style="border:1.5px dashed var(--line)"></i>Sin datos</span></div>`;
+  const adds=Array.from({length:10},(_,i)=>skillCell(p,'add+'+(i+1),'+'+(i+1))).join('');
+  const subs=Array.from({length:9},(_,i)=>skillCell(p,'sub-'+(i+1),MIN+(i+1))).join('');
+  const rows=Object.keys(SK).filter(s=>!/^(add\+|sub-)/.test(s)&&p.skills[s]).map(s=>{const k=p.skills[s];const st=skillState(p,s);return `<tr><td>${esc(LABEL(s))}</td><td class="n">${k.n}</td><td class="n">${pct(k.acc)}</td><td class="n">${fmtSec(k.med)}</td><td class="n">${fmtSec(target(s))}</td><td><span class="pill ${st==='flu'?'p-ok':st==='prec'?'p-warn':st==='prac'?'p-red':'p-mute'}">${({flu:'Fluido',prec:'Preciso',prac:'En práctica',none:'Pocos datos'})[st]}</span></td></tr>`;}).join('');
+  return `<div class="grid2"><section class="card"><h3>Sumas por sumando</h3>${legend}<div class="skmap">${adds}</div></section><section class="card"><h3>Restas por sustraendo</h3><div class="skmap">${subs}</div></section></div>
+  <section class="card" style="margin-top:14px"><h3>Otras habilidades</h3>${rows?`<div class="tbl"><table style="min-width:560px"><thead><tr><th>Habilidad</th><th>Ejercicios</th><th>Precisión reciente</th><th>Tiempo mediano</th><th>Objetivo base</th><th>Estado</th></tr></thead><tbody>${rows}</tbody></table></div>`:'<p class="muted" style="margin:0">Aún sin datos.</p>'}<p class="muted" style="margin:0;font-size:.88rem">La precisión reciente pondera más las últimas respuestas. El objetivo base se amplía en 0,7 s por cada dígito extra que hay que teclear.</p></section>`;
+}
+function adSesiones(p){
+  if(!p.sesiones.length)return '<p class="muted">Todavía no hay sesiones.</p>';
+  return `<div class="tbl"><table><thead><tr><th>Fecha</th><th>Hoja</th><th>A la primera</th><th>Correcc.</th><th>Ayudas pedidas / auto</th><th>Repetidos</th><th>Ritmo</th><th>Tiempo activo</th><th>Fase</th><th>Resultado</th></tr></thead><tbody>${p.sesiones.map(s=>{const extra=[s.lentas&&s.lentas.length?'Lento en: '+s.lentas.join(', '):'',s.patrones&&Object.keys(s.patrones).length?'Error: '+fmtPat(s.patrones):'',s.proc&&Object.keys(s.proc).length?fmtProc(s.proc):''].filter(Boolean).join(' · ');return `<tr><td class="tnum">${fmtDate(s.fecha)}${s.ejemplo?' <span class="pill p-mute">ejemplo</span>':''}${s.extra?' <span class="pill p-acc">extra</span>':''}</td><td>${esc(s.titulo)}${extra?`<div class="muted" style="font-size:.8rem">${esc(extra)}</div>`:''}</td><td class="n">${s.aciertos1}/${s.n}</td><td class="n">${s.correcciones||0}</td><td class="n">${s.ayudasPedidas||0} / ${s.ayudasAuto||0}</td><td class="n">${s.repetidos||0}</td><td class="n">${fmtR(s.ritmo)}</td><td class="n">${fmtS(s.tiempoMs||0)}</td><td>${esc(s.fase)}</td><td>${esc(s.decision)}</td></tr>`;}).join('')}</tbody></table></div><p class="muted" style="font-size:.85rem">Ritmo = tiempo mediano por ejercicio dividido por el objetivo. Bajo 1,00 es más rápido que el objetivo.</p>`;
+}
+function adDiag(p){
+  const how='<p class="muted" style="margin:0;font-size:.9rem">Parte con 2 ejercicios de práctica que no cuentan. Cada prueba tiene 5 ejercicios y se aprueba con 4. Si responde con soltura, salta una prueba; si luego falla, vuelve a la que saltó. Termina con dos pruebas seguidas bajo el umbral, y ubica el inicio un poco por debajo de lo demostrado.</p>';
+  if(!hasDiag(p))return `<section class="card"><h3>Diagnóstico pendiente</h3>${how}<div><button class="btn pri" id="runDiag">Hacer diagnóstico ahora</button></div></section>`;
+  const d=p.diag;
+  return `<div class="grid2"><section class="card"><h3>Resultado</h3><p class="muted" style="margin:0">${fmtDate(d.fecha)}</p><dl class="kv">${d.resumen.filter(([k])=>k!=='Estabilidad').map(([k,v])=>`<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')}<dt>Máximo con fluidez</dt><dd>${esc(d.resultado.max)}</dd><dt>Punto de inicio</dt><dd>Etapa ${STEPS[d.inicio].etapa} · ${esc(STEPS[d.inicio].titulo)}</dd></dl><div><button class="btn" id="runDiag">Repetir diagnóstico</button></div></section>
+  <section class="card"><h3>Pruebas aplicadas</h3>${d.resultado.probes.length?`<div class="tbl"><table style="min-width:420px"><thead><tr><th>Prueba</th><th>Correctas</th><th>Tiempo mediano</th><th>Estado</th></tr></thead><tbody>${d.resultado.probes.map(x=>`<tr><td>${esc(x.que)}</td><td class="n">${x.c}/${x.n||3}</td><td class="n">${fmtSec(x.ms)}</td><td>${esc(x.estado)}</td></tr>`).join('')}</tbody></table></div>`:'<p class="muted" style="margin:0">Sin detalle disponible.</p>'}${how}</section></div>`;
+}
+function adMapa(p){
+  return `<section class="card"><h3>Mapa de aprendizaje</h3><p class="muted" style="margin:0">${ETAPAS.length} etapas y ${STEPS.length} pasos. El niño ve solo el número de paso y el camino de su etapa.</p><div class="map">${ETAPAS.map(e=>`<div class="et"><div><b>${e.n}.</b> ${esc(e.nombre)}</div><div class="st">${STEPS.slice(e.desde,e.hasta+1).map(s=>`<i class="${s.idx<p.step?'d':s.idx===p.step?'c':''}" title="Paso ${s.idx+1}: ${esc(s.titulo)} (${s.n} ejercicios)"></i>`).join('')}</div></div>`).join('')}</div></section>`;
+}
+function adAjustes(p){
+  const selStep=S.editStep!=null?S.editStep:p.step;const selEt=STEPS[selStep].etapa;const e=ETAPAS[selEt-1];
+  const vs=S.voiceOk===true?'Voz en español disponible'+(esVoice?' ('+esc(esVoice.name)+')':''):S.voiceOk===false?'No hay voz en español en este dispositivo':'Buscando voces…';
+  return `<div class="grid2"><section class="card"><h3>Alumno</h3><label class="f" for="nm">Nombre<input type="text" id="nm" value="${esc(p.nombre)}" maxlength="40"></label><div><button class="btn pri" id="saveName">Guardar nombre</button></div></section>
+  <section class="card"><h3>Tarea diaria</h3><p class="muted" style="margin:0;font-size:.9rem">Cada hoja toma entre 2 y 6 minutos, según el paso. Para empezar se recomiendan 1 o 2 hojas diarias.</p><label class="f" for="tHojas">Hojas por día<select id="tHojas">${[1,2,3,4].map(n=>`<option value="${n}" ${tareaDe(p).hojas===n?'selected':''}>${n}</option>`).join('')}</select></label><div class="f" style="font-size:.9rem;color:var(--ink-2)">Días<div class="days">${[1,2,3,4,5,6,0].map(i=>`<label for="tDia${i}"><input type="checkbox" id="tDia${i}" ${tareaDe(p).dias[i]?'checked':''}>${DIAS[i]}</label>`).join('')}</div></div><div class="toggles"><label><input type="checkbox" id="tExtra" ${tareaDe(p).extra?'checked':''}>Permitir hojas extra después de terminar la tarea</label></div><div><button class="btn pri" id="saveTarea">Guardar tarea</button></div></section>
+  <section class="card"><h3>Voz y sonido</h3><p class="muted" style="margin:0;font-size:.9rem">Se guarda en este dispositivo.</p><div class="toggles"><label><input type="checkbox" id="cfgVoz" ${CFG.voz?'checked':''}>Leer instrucciones en voz alta</label><label><input type="checkbox" id="cfgSon" ${CFG.sonido?'checked':''}>Sonidos de acierto y error</label></div><p style="margin:0;font-size:.9rem">${vs}</p>${esVoices.length?`<label class="f" for="cfgVoice">Voz<select id="cfgVoice">${esVoices.map((v,i)=>`<option value="${esc(v.voiceURI)}" ${esVoice&&v.voiceURI===esVoice.voiceURI?'selected':''}>${esc(v.name)} (${esc(v.lang)})${i===0?' · recomendada':''}</option>`).join('')}</select></label>`:''}<label class="f" for="cfgRate">Velocidad<select id="cfgRate"><option value="0.8" ${CFG.rate<=.85?'selected':''}>Lenta</option><option value="0.95" ${CFG.rate>.85&&CFG.rate<1.05?'selected':''}>Normal</option><option value="1.1" ${CFG.rate>=1.05?'selected':''}>Rápida</option></select></label><div><button class="btn" id="testVoz">Probar voz</button></div><p class="muted" style="margin:0;font-size:.85rem">Las voces las entrega el dispositivo. Para una voz más natural: en iPad o iPhone, Ajustes › Accesibilidad › Contenido leído › Voces › Español, y descargue una voz "Mejorada" o "Premium". En Android, instale "Servicios de voz de Google" con el paquete de español. En Chrome de computador, las voces "Google español" suenan mejor que las del sistema.</p></section>
+  <section class="card"><h3>Cambiar punto de trabajo</h3><p class="muted" style="margin:0;font-size:.9rem">Úselo solo si el paso actual claramente no corresponde. Lo habitual es dejar que el sistema decida.</p><label class="f" for="selEt">Etapa<select id="selEt">${ETAPAS.map(x=>`<option value="${x.n}" ${x.n===selEt?'selected':''}>${x.n}. ${esc(x.nombre)}</option>`).join('')}</select></label><label class="f" for="selSt">Paso<select id="selSt">${STEPS.slice(e.desde,e.hasta+1).map(s=>`<option value="${s.idx}" ${s.idx===selStep?'selected':''}>${s.idx+1}. ${esc(s.titulo)}</option>`).join('')}</select></label><div><button class="btn pri" id="saveStep">Mover a este paso</button></div></section>
+  <section class="card"><h3>Copia de seguridad</h3><p class="muted" style="margin:0;font-size:.9rem">El progreso se guarda solo en este dispositivo. Descarga una copia de vez en cuando, o úsala para pasar el progreso a otro dispositivo.</p><div class="row"><button class="btn pri" id="bkExport">Descargar copia</button><label class="btn" for="bkFile" style="cursor:pointer">Restaurar copia</label><input type="file" id="bkFile" accept="application/json,.json" hidden></div>${S.bkMsg?`<p style="margin:0;font-size:.9rem">${esc(S.bkMsg)}</p>`:''}</section>
+  <section class="card"><h3>Eliminar alumno</h3>${S.confirmDel?`<div class="confirm"><span>Se borra todo su registro.</span><button class="btn danger" id="delYes">Eliminar</button><button class="btn" id="delNo">Cancelar</button></div>`:`<div><button class="btn ghost" id="delProf">Eliminar a ${esc(p.nombre)}</button></div>`}</section></div>`;
+}
+
+/* ============ render y eventos ============ */
+const app=document.getElementById('app');
+function render(){
+  const v={inicio:viewInicio,kid:viewKid,run:viewRun,done:viewDone,adult:viewAdult}[S.screen]||viewInicio;
+  app.innerHTML=v();bindHold();
+  if(S.screen==='inicio'&&S.newKid){const i=document.getElementById('kidName');if(i)i.focus();}
+}
+function bindHold(){const b=document.getElementById('goAdult');if(!b)return;let t=null;
+  const go=()=>{S.screen='adult';S.confirmDel=false;S.editStep=null;render();};
+  b.addEventListener('pointerdown',e=>{e.preventDefault();b.classList.add('holding');t=setTimeout(go,800);});
+  ['pointerup','pointerleave','pointercancel'].forEach(ev=>b.addEventListener(ev,()=>{b.classList.remove('holding');clearTimeout(t);}));
+  b.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go();}});}
+
+function press(k){
+  const r=S.run;if(!r||r.example||r.paused||r.fb==='ok')return;const it=r.items[r.i];if(!it||it.kind==='pick'||it.kind==='ord')return;
+  if(r.focus.startsWith('n')){const j=r.focus.slice(1);const maxN=it.op==='+'?1:2;let v=r.notes[j]||'';
+    if(k==='ok'){r.focus='ans';render();return;}
+    if(k==='del'){v=v.slice(0,-1);}else{if(v.length>=maxN)v='';v+=k;}
+    if(v)r.notes[j]=v;else delete r.notes[j];
+    if(v.length>=maxN)r.focus='ans';render();return;}
+  if(k==='ok'){if(r.input)checkAnswer(r.input);return;}
+  const isV=it.kind==='v';const max=isV?vertW(it):3;let v=r.input;
+  if(k==='del')v=isV?v.slice(1):v.slice(0,-1);else{if(v.length>=max)return;v=isV?k+v:v+k;}
+  r.input=v;render();
+}
+function tapOpt(v){const r=S.run;if(r.fb==='ok'||r.paused)return;const it=r.items[r.i];const wrong=+v!==it.answer;checkAnswer(v);if(wrong&&graded(r)&&S.run===r){r.bad=+v;render();}}
+function tapOrd(v){const r=S.run;if(r.fb==='ok'||r.paused)return;const it=r.items[r.i];v=+v;const need=it.answer[r.placed.length];
+  if(v===need){r.placed.push(v);r.bad=null;
+    if(r.placed.length===it.answer.length){if(r.firstMs==null)r.firstMs=Date.now()-r.itemStart;
+      if(!graded(r)){r.log.push({skill:it.skill,ok1:r.attempts===0,ms:r.firstMs,tgt:itemTarget(it)});advance();return;}
+      r.fb='ok';sndOk();render();setTimeout(()=>{if(S.run!==r)return;recordItem();advance();},420);return;}
+    render();return;}
+  r.attempts++;r.bad=v;
+  if(!graded(r)){render();return;}
+  r.fb='bad';sndBad();if(r.attempts>=3){r.reveal=true;speak('Busca el '+need);}
+  render();setTimeout(()=>{if(S.run===r&&r.fb==='bad'){r.fb=null;render();}},420);
+}
+
+app.addEventListener('submit',e=>{if(e.target.id==='newKidForm'){e.preventDefault();const v=document.getElementById('kidName').value.trim();if(!v)return;const q=newProfile(v);S.profiles=S.profiles.filter(x=>!x.ejemplo||!x.semilla);S.profiles.push(q);S.activeId=q.id;persist(q);S.newKid=false;S.screen='kid';render();}});
+app.addEventListener('click',e=>{
+  const t=e.target.closest('button,[data-vans]');if(!t)return;const id=t.id;const p=cur();const r=S.run;
+  if(t.dataset.k){press(t.dataset.k);return;}
+  if(t.dataset.opt!=null){tapOpt(t.dataset.opt);return;}
+  if(t.dataset.ord!=null){tapOrd(t.dataset.ord);return;}
+  if(t.dataset.note!=null){r.focus='n'+t.dataset.note;render();return;}
+  if(t.dataset.strike!=null){const j=t.dataset.strike;if(r.strike[j])delete r.strike[j];else{r.strike[j]=true;r.focus='n'+j;}render();return;}
+  if(t.dataset.vans){r.focus='ans';render();return;}
+  if(t.dataset.pick){S.activeId=t.dataset.pick;lsSet();S.screen='kid';render();return;}
+  if(t.dataset.prof){S.activeId=t.dataset.prof;S.confirmDel=false;S.editStep=null;lsSet();render();return;}
+  if(t.dataset.tab){S.adultTab=t.dataset.tab;S.confirmDel=false;render();return;}
+  switch(id){
+    case'newKid':S.newKid=true;render();break;
+    case'newKidCancel':S.newKid=false;render();break;
+    case'toInicio':case'goInicio':S.screen='inicio';render();break;
+    case'goRun':clearRun(p.id);startRun('hoja');break;
+    case'goDiag':case'runDiag':clearRun(p.id);startRun('diag');break;
+    case'goResume':resumeSaved();break;
+    case'exGo':r.example=null;r.resumeAt=Date.now();r.activeMs=0;beginItem(false);render();break;
+    case'say':{const it=r.example||r.items[r.i];speak(r.example?'Mira. '+instr(it)+'. '+readout(it):instr(it)+'. '+readout(it));break;}
+    case'pause':pauseRun();break;
+    case'resume':resumeRun();break;
+    case'saveExit':saveRun();S.run=null;S.screen='kid';render();break;
+    case'discard':r.confirmDiscard=true;render();break;
+    case'discardNo':r.confirmDiscard=false;render();break;
+    case'discardYes':clearRun(r.pid);S.run=null;S.screen='kid';render();break;
+    case'help':r.helpOn=true;r.helpAsked=true;render();break;
+    case'goHome':S.screen='kid';render();break;
+    case'goKid':S.screen='kid';render();break;
+    case'clearEx':case'addProf':{const q=newProfile('Alumno '+(S.profiles.filter(x=>!x.ejemplo).length+1));if(id==='clearEx')S.profiles=S.profiles.filter(x=>!x.ejemplo);S.profiles.push(q);S.activeId=q.id;persist(q);S.adultTab='ajustes';render();break;}
+    case'saveName':{const v=document.getElementById('nm').value.trim();if(v){p.nombre=v;persist(p);render();}break;}
+    case'saveStep':{const v=+document.getElementById('selSt').value;p.step=v;p.streakPrec=0;p.streakDom=0;p.failStreak=0;if(p.ejemplo){p.ejemplo=false;p.sesiones=[];p.skills={};p.facts={};}if(!p.diag)p.diag={fecha:Date.now(),inicio:v,resultado:{max:'Asignado por el adulto',probes:[]},resumen:[['Origen','Punto asignado manualmente']]};clearRun(p.id);S.editStep=null;persist(p);S.adultTab='resumen';render();break;}
+    case'delProf':S.confirmDel=true;render();break;
+    case'delNo':S.confirmDel=false;render();break;
+    case'delYes':{removeProfile(p.id);if(!S.profiles.length){const q=newProfile('Alumno 1');S.profiles.push(q);persist(q);}S.activeId=S.profiles[0].id;S.confirmDel=false;render();break;}
+    case'saveTarea':{p.tarea={hojas:+document.getElementById('tHojas').value,dias:[0,1,2,3,4,5,6].map(i=>document.getElementById('tDia'+i).checked),extra:document.getElementById('tExtra').checked};persist(p);S.adultTab='resumen';render();break;}
+    case'goNext':startRun('hoja');break;
+    case'bkExport':{const data={app:'MatLau',version:1,fecha:new Date().toISOString(),profiles:S.profiles.filter(x=>!x.ejemplo)};const blob=new Blob([JSON.stringify(data)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='matlau-copia-'+dayKey(Date.now())+'.json';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1000);S.bkMsg='Copia descargada.';render();break;}
+    case'testVoz':speak('Hola. Así voy a leer las instrucciones.');break;
+  }
+});
+app.addEventListener('change',e=>{const id=e.target.id;
+  if(id==='bkFile'){const f=e.target.files&&e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{try{const d=JSON.parse(rd.result);if(!d||d.app!=='MatLau'||!Array.isArray(d.profiles))throw 0;let n=0;d.profiles.forEach(q=>{q=norm(q);const k=S.profiles.findIndex(x=>x.id===q.id);if(k>=0)S.profiles[k]=q;else S.profiles.push(q);n++;});S.profiles=S.profiles.filter(x=>!x.ejemplo);if(!S.profiles.length){const q=newProfile('Alumno 1');S.profiles.push(q);}if(!cur())S.activeId=S.profiles[0].id;S.profiles.forEach(q=>persist(q));S.bkMsg='Copia restaurada: '+n+(n===1?' alumno.':' alumnos.');}catch(err){S.bkMsg='Ese archivo no es una copia de MatLau válida.';}render();};rd.readAsText(f);return;}
+  if(id==='selEt'){S.editStep=ETAPAS[+e.target.value-1].desde;render();}
+  else if(id==='selSt')S.editStep=+e.target.value;
+  else if(id==='cfgVoz'){CFG.voz=e.target.checked;saveCfg();render();}
+  else if(id==='cfgSon'){CFG.sonido=e.target.checked;saveCfg();}
+  else if(id==='cfgVoice'){CFG.voiceURI=e.target.value;saveCfg();pickVoice();speak('Hola. Así voy a leer las instrucciones.');}
+  else if(id==='cfgRate'){CFG.rate=+e.target.value;saveCfg();speak('Hola. Así voy a leer las instrucciones.');}
+});
+document.addEventListener('keydown',e=>{if(S.screen!=='run'||!S.run||S.run.example)return;if(e.target.tagName==='INPUT')return;
+  if(e.key==='Escape'){S.run.paused?resumeRun():pauseRun();return;}
+  if(S.run.paused)return;
+  if(/^[0-9]$/.test(e.key)){press(e.key);e.preventDefault();}else if(e.key==='Backspace'){press('del');e.preventDefault();}else if(e.key==='Enter'){press('ok');e.preventDefault();}});
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&S.screen==='run'&&S.run&&!S.run.paused&&!S.run.example)pauseRun();});
+
+/* ============ arranque ============ */
+if(!('speechSynthesis' in window))S.voiceOk=false;
+else{pickVoice();try{speechSynthesis.addEventListener('voiceschanged',()=>{pickVoice();if(S.screen==='adult')render();});}catch(e){}setTimeout(()=>{if(S.voiceOk==null){pickVoice();if(S.voiceOk==null)S.voiceOk=false;if(S.screen==='adult')render();}},2500);}
+const saved=lsGetK(LS,null)||lsGetK('laumat.v1',null);
+if(saved&&saved.profiles&&saved.profiles.length){S.profiles=saved.profiles.map(norm);S.activeId=saved.activeId;}
+else{const s=seedProfile();S.profiles=[s];S.activeId=s.id;}
+if(!cur())S.activeId=S.profiles[0].id;
+render();
+try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist();}catch(e){}
+if('serviceWorker' in navigator&&location.protocol!=='file:'){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});}
+})();
+</script>
+</body>
+</html>
