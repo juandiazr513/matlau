@@ -1,0 +1,38 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'io.github.juandiazr513.matlau'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'io.github.juandiazr513.matlau'
+        minSdk 24
+        targetSdk 34
+        versionCode((System.getenv('VERSION_CODE') ?: '1').toInteger())
+        versionName '1.0.' + (System.getenv('VERSION_CODE') ?: '0')
+    }
+
+    signingConfigs {
+        release {
+            // Llave solo para instalar el APK directamente (no es la llave de Google Play).
+            storeFile file('../sideload.keystore')
+            storePassword 'matlau-sideload'
+            keyAlias 'matlau'
+            keyPassword 'matlau-sideload'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.release
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}

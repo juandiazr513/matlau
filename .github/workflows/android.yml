@@ -1,0 +1,55 @@
+name: APK de Android
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Incluir la app web en el APK
+        run: |
+          mkdir -p android/app/src/main/assets/www
+          cp -r index.html manifest.webmanifest fonts icons android/app/src/main/assets/www/
+
+      - name: Compilar
+        working-directory: android
+        env:
+          VERSION_CODE: ${{ github.run_number }}
+        run: gradle assembleRelease --no-daemon --stacktrace
+
+      - name: Preparar archivo
+        run: cp android/app/build/outputs/apk/release/app-release.apk MatLau.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MatLau-apk
+          path: MatLau.apk
+
+      - name: Publicar en Descargas
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: apk-latest
+          name: MatLau para Android (última versión)
+          body: |
+            Descarga **MatLau.apk** desde el celular Android y ábrelo para instalar.
+            Si Android lo pide, permite "instalar apps de origen desconocido" para el navegador o el administrador de archivos.
+            Versión compilada automáticamente: 1.0.${{ github.run_number }}.
+          files: MatLau.apk
+          make_latest: true

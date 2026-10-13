@@ -309,7 +309,8 @@ let esVoice=null;
 let esVoices=[];
 function voiceScore(v){let s=0;if(/^es[-_]CL/i.test(v.lang))s+=3;else if(/^es[-_](419|MX|US|AR|CO)/i.test(v.lang))s+=2;else s+=1;if(/natural|neural|premium|enhanced|mejorad|online/i.test(v.name))s+=5;else if(/google/i.test(v.name))s+=4;if(/eloquence|espeak|compact/i.test(v.name))s-=3;return s;}
 function pickVoice(){try{const vs=window.speechSynthesis.getVoices();if(!vs.length)return;esVoices=vs.filter(v=>/^es/i.test(v.lang)).sort((a,b)=>voiceScore(b)-voiceScore(a));esVoice=(CFG.voiceURI&&esVoices.find(v=>v.voiceURI===CFG.voiceURI))||esVoices[0]||null;S.voiceOk=!!esVoice;}catch(e){S.voiceOk=false;}}
-function speak(t){if(!CFG.voz||!t)return;try{const s=window.speechSynthesis;if(!s)return;s.cancel();const u=new SpeechSynthesisUtterance(t);if(esVoice){u.voice=esVoice;u.lang=esVoice.lang;}else u.lang='es-CL';u.rate=CFG.rate||.95;u.pitch=1.05;s.speak(u);}catch(e){}}
+const AND=window.MatLauAndroid||null;
+function speak(t){if(!CFG.voz||!t)return;if(AND){try{AND.speak(String(t),CFG.rate||.95);}catch(e){}return;}try{const s=window.speechSynthesis;if(!s)return;s.cancel();const u=new SpeechSynthesisUtterance(t);if(esVoice){u.voice=esVoice;u.lang=esVoice.lang;}else u.lang='es-CL';u.rate=CFG.rate||.95;u.pitch=1.05;s.speak(u);}catch(e){}}
 let AC=null;
 function tones(seq){if(!CFG.sonido)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();let t=AC.currentTime+.01;seq.forEach(([f,d])=>{const o=AC.createOscillator(),g=AC.createGain();o.type='sine';o.frequency.setValueAtTime(f,t);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.14,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+d+.02);t+=d*.8;});}catch(e){}}
 const sndOk=()=>tones([[660,.12],[880,.18]]);
@@ -515,7 +516,7 @@ function beginItem(quietFirst){const r=S.run;Object.assign(r,{input:'',notes:{},
   if(it.kind==='pick'||r.prevKind!==it.kind){if(!(quietFirst&&r.tipo==='diag'&&r.phase==='practica'))speak(instr(it));}
   r.prevKind=it.kind;saveRun();}
 function activeNow(r){return r.activeMs+(r.paused?0:Date.now()-r.resumeAt);}
-function pauseRun(){const r=S.run;if(!r||r.paused||r.example)return;r.activeMs+=Date.now()-r.resumeAt;r.pausedAt=Date.now();r.paused=true;r.confirmDiscard=false;saveRun();try{window.speechSynthesis&&speechSynthesis.cancel();}catch(e){}render();}
+function pauseRun(){const r=S.run;if(!r||r.paused||r.example)return;r.activeMs+=Date.now()-r.resumeAt;r.pausedAt=Date.now();r.paused=true;r.confirmDiscard=false;saveRun();try{if(AND)AND.stop();else if(window.speechSynthesis)speechSynthesis.cancel();}catch(e){}render();}
 function resumeRun(){const r=S.run;if(!r||!r.paused)return;const d=Date.now()-r.pausedAt;r.itemStart+=d;r.resumeAt=Date.now();r.paused=false;render();}
 
 const graded=r=>r.tipo==='hoja'||r.phase==='practica';
@@ -840,10 +841,10 @@ function adMapa(p){
 }
 function adAjustes(p){
   const selStep=S.editStep!=null?S.editStep:p.step;const selEt=STEPS[selStep].etapa;const e=ETAPAS[selEt-1];
-  const vs=S.voiceOk===true?'Voz en español disponible'+(esVoice?' ('+esc(esVoice.name)+')':''):S.voiceOk===false?'No hay voz en español en este dispositivo':'Buscando voces…';
+  const vs=AND?(S.voiceOk===true?'Voz de Android: '+esc(AND.voiceName()):S.voiceOk===false?'Android no tiene una voz en español instalada':'Preparando la voz…'):S.voiceOk===true?'Voz en español disponible'+(esVoice?' ('+esc(esVoice.name)+')':''):S.voiceOk===false?'No hay voz en español en este dispositivo':'Buscando voces…';
   return `<div class="grid2"><section class="card"><h3>Alumno</h3><label class="f" for="nm">Nombre<input type="text" id="nm" value="${esc(p.nombre)}" maxlength="40"></label><div><button class="btn pri" id="saveName">Guardar nombre</button></div></section>
   <section class="card"><h3>Tarea diaria</h3><p class="muted" style="margin:0;font-size:.9rem">Cada hoja toma entre 2 y 6 minutos, según el paso. Para empezar se recomiendan 1 o 2 hojas diarias.</p><label class="f" for="tHojas">Hojas por día<select id="tHojas">${[1,2,3,4].map(n=>`<option value="${n}" ${tareaDe(p).hojas===n?'selected':''}>${n}</option>`).join('')}</select></label><div class="f" style="font-size:.9rem;color:var(--ink-2)">Días<div class="days">${[1,2,3,4,5,6,0].map(i=>`<label for="tDia${i}"><input type="checkbox" id="tDia${i}" ${tareaDe(p).dias[i]?'checked':''}>${DIAS[i]}</label>`).join('')}</div></div><div class="toggles"><label><input type="checkbox" id="tExtra" ${tareaDe(p).extra?'checked':''}>Permitir hojas extra después de terminar la tarea</label></div><div><button class="btn pri" id="saveTarea">Guardar tarea</button></div></section>
-  <section class="card"><h3>Voz y sonido</h3><p class="muted" style="margin:0;font-size:.9rem">Se guarda en este dispositivo.</p><div class="toggles"><label><input type="checkbox" id="cfgVoz" ${CFG.voz?'checked':''}>Leer instrucciones en voz alta</label><label><input type="checkbox" id="cfgSon" ${CFG.sonido?'checked':''}>Sonidos de acierto y error</label></div><p style="margin:0;font-size:.9rem">${vs}</p>${esVoices.length?`<label class="f" for="cfgVoice">Voz<select id="cfgVoice">${esVoices.map((v,i)=>`<option value="${esc(v.voiceURI)}" ${esVoice&&v.voiceURI===esVoice.voiceURI?'selected':''}>${esc(v.name)} (${esc(v.lang)})${i===0?' · recomendada':''}</option>`).join('')}</select></label>`:''}<label class="f" for="cfgRate">Velocidad<select id="cfgRate"><option value="0.8" ${CFG.rate<=.85?'selected':''}>Lenta</option><option value="0.95" ${CFG.rate>.85&&CFG.rate<1.05?'selected':''}>Normal</option><option value="1.1" ${CFG.rate>=1.05?'selected':''}>Rápida</option></select></label><div><button class="btn" id="testVoz">Probar voz</button></div><p class="muted" style="margin:0;font-size:.85rem">Las voces las entrega el dispositivo. Para una voz más natural: en iPad o iPhone, Ajustes › Accesibilidad › Contenido leído › Voces › Español, y descargue una voz "Mejorada" o "Premium". En Android, instale "Servicios de voz de Google" con el paquete de español. En Chrome de computador, las voces "Google español" suenan mejor que las del sistema.</p></section>
+  <section class="card"><h3>Voz y sonido</h3><p class="muted" style="margin:0;font-size:.9rem">Se guarda en este dispositivo.</p><div class="toggles"><label><input type="checkbox" id="cfgVoz" ${CFG.voz?'checked':''}>Leer instrucciones en voz alta</label><label><input type="checkbox" id="cfgSon" ${CFG.sonido?'checked':''}>Sonidos de acierto y error</label></div><p style="margin:0;font-size:.9rem">${vs}</p>${AND?`<div class="row"><button class="btn" id="andTts">Elegir voz en Android</button><button class="btn ghost" id="andReload">Actualizar voz</button></div><p class="muted" style="margin:0;font-size:.85rem">En los ajustes de Android elija "Servicios de voz de Google", idioma Español, y descargue la voz que más le guste. Luego vuelva y toque Actualizar voz.</p>`:''}${!AND&&esVoices.length?`<label class="f" for="cfgVoice">Voz<select id="cfgVoice">${esVoices.map((v,i)=>`<option value="${esc(v.voiceURI)}" ${esVoice&&v.voiceURI===esVoice.voiceURI?'selected':''}>${esc(v.name)} (${esc(v.lang)})${i===0?' · recomendada':''}</option>`).join('')}</select></label>`:''}<label class="f" for="cfgRate">Velocidad<select id="cfgRate"><option value="0.8" ${CFG.rate<=.85?'selected':''}>Lenta</option><option value="0.95" ${CFG.rate>.85&&CFG.rate<1.05?'selected':''}>Normal</option><option value="1.1" ${CFG.rate>=1.05?'selected':''}>Rápida</option></select></label><div><button class="btn" id="testVoz">Probar voz</button></div><p class="muted" style="margin:0;font-size:.85rem">Las voces las entrega el dispositivo. Para una voz más natural: en iPad o iPhone, Ajustes › Accesibilidad › Contenido leído › Voces › Español, y descargue una voz "Mejorada" o "Premium". En Android, instale "Servicios de voz de Google" con el paquete de español. En Chrome de computador, las voces "Google español" suenan mejor que las del sistema.</p></section>
   <section class="card"><h3>Cambiar punto de trabajo</h3><p class="muted" style="margin:0;font-size:.9rem">Úselo solo si el paso actual claramente no corresponde. Lo habitual es dejar que el sistema decida.</p><label class="f" for="selEt">Etapa<select id="selEt">${ETAPAS.map(x=>`<option value="${x.n}" ${x.n===selEt?'selected':''}>${x.n}. ${esc(x.nombre)}</option>`).join('')}</select></label><label class="f" for="selSt">Paso<select id="selSt">${STEPS.slice(e.desde,e.hasta+1).map(s=>`<option value="${s.idx}" ${s.idx===selStep?'selected':''}>${s.idx+1}. ${esc(s.titulo)}</option>`).join('')}</select></label><div><button class="btn pri" id="saveStep">Mover a este paso</button></div></section>
   <section class="card"><h3>Copia de seguridad</h3><p class="muted" style="margin:0;font-size:.9rem">El progreso se guarda solo en este dispositivo. Descarga una copia de vez en cuando, o úsala para pasar el progreso a otro dispositivo.</p><div class="row"><button class="btn pri" id="bkExport">Descargar copia</button><label class="btn" for="bkFile" style="cursor:pointer">Restaurar copia</label><input type="file" id="bkFile" accept="application/json,.json" hidden></div>${S.bkMsg?`<p style="margin:0;font-size:.9rem">${esc(S.bkMsg)}</p>`:''}</section>
   <section class="card"><h3>Eliminar alumno</h3>${S.confirmDel?`<div class="confirm"><span>Se borra todo su registro.</span><button class="btn danger" id="delYes">Eliminar</button><button class="btn" id="delNo">Cancelar</button></div>`:`<div><button class="btn ghost" id="delProf">Eliminar a ${esc(p.nombre)}</button></div>`}</section></div>`;
@@ -851,7 +852,16 @@ function adAjustes(p){
 
 /* ============ render y eventos ============ */
 const app=document.getElementById('app');
+window.__androidBack=function(){
+  if(S.screen==='run'&&S.run){if(S.run.paused){S.run=null;S.screen='kid';render();}else pauseRun();return true;}
+  if(S.screen==='adult'||S.screen==='done'){S.screen='kid';render();return true;}
+  if(S.screen==='kid'){S.screen='inicio';render();return true;}
+  if(S.screen==='inicio'&&S.newKid){S.newKid=false;render();return true;}
+  return false;
+};
+let lastScreen=null;
 function render(){
+  if(AND&&S.screen!==lastScreen){try{AND.keepScreenOn(S.screen==='run');}catch(e){}lastScreen=S.screen;}
   const v={inicio:viewInicio,kid:viewKid,run:viewRun,done:viewDone,adult:viewAdult}[S.screen]||viewInicio;
   app.innerHTML=v();bindHold();
   if(S.screen==='inicio'&&S.newKid){const i=document.getElementById('kidName');if(i)i.focus();}
@@ -925,7 +935,9 @@ app.addEventListener('click',e=>{
     case'delYes':{removeProfile(p.id);if(!S.profiles.length){const q=newProfile('Alumno 1');S.profiles.push(q);persist(q);}S.activeId=S.profiles[0].id;S.confirmDel=false;render();break;}
     case'saveTarea':{p.tarea={hojas:+document.getElementById('tHojas').value,dias:[0,1,2,3,4,5,6].map(i=>document.getElementById('tDia'+i).checked),extra:document.getElementById('tExtra').checked};persist(p);S.adultTab='resumen';render();break;}
     case'goNext':startRun('hoja');break;
-    case'bkExport':{const data={app:'MatLau',version:1,fecha:new Date().toISOString(),profiles:S.profiles.filter(x=>!x.ejemplo)};const blob=new Blob([JSON.stringify(data)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='matlau-copia-'+dayKey(Date.now())+'.json';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1000);S.bkMsg='Copia descargada.';render();break;}
+    case'bkExport':{const data={app:'MatLau',version:1,fecha:new Date().toISOString(),profiles:S.profiles.filter(x=>!x.ejemplo)};if(AND){AND.saveFile('matlau-copia-'+dayKey(Date.now())+'.json',JSON.stringify(data));S.bkMsg='Elige dónde guardar la copia.';render();break;}const blob=new Blob([JSON.stringify(data)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='matlau-copia-'+dayKey(Date.now())+'.json';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1000);S.bkMsg='Copia descargada.';render();break;}
+    case'andTts':if(AND)AND.openTtsSettings();break;
+    case'andReload':if(AND){S.voiceOk=null;AND.reloadVoice();render();}break;
     case'testVoz':speak('Hola. Así voy a leer las instrucciones.');break;
   }
 });
@@ -945,7 +957,8 @@ document.addEventListener('keydown',e=>{if(S.screen!=='run'||!S.run||S.run.examp
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&S.screen==='run'&&S.run&&!S.run.paused&&!S.run.example)pauseRun();});
 
 /* ============ arranque ============ */
-if(!('speechSynthesis' in window))S.voiceOk=false;
+if(AND){S.voiceOk=AND.ttsReady()?true:null;window.__ttsReady=()=>{S.voiceOk=true;if(S.screen==='adult')render();};setTimeout(()=>{if(S.voiceOk==null){S.voiceOk=AND.ttsReady();if(S.screen==='adult')render();}},5000);}
+else if(!('speechSynthesis' in window))S.voiceOk=false;
 else{pickVoice();try{speechSynthesis.addEventListener('voiceschanged',()=>{pickVoice();if(S.screen==='adult')render();});}catch(e){}setTimeout(()=>{if(S.voiceOk==null){pickVoice();if(S.voiceOk==null)S.voiceOk=false;if(S.screen==='adult')render();}},2500);}
 const saved=lsGetK(LS,null)||lsGetK('laumat.v1',null);
 if(saved&&saved.profiles&&saved.profiles.length){S.profiles=saved.profiles.map(norm);S.activeId=saved.activeId;}
@@ -953,7 +966,7 @@ else{const s=seedProfile();S.profiles=[s];S.activeId=s.id;}
 if(!cur())S.activeId=S.profiles[0].id;
 render();
 try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist();}catch(e){}
-if('serviceWorker' in navigator&&location.protocol!=='file:'){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});}
+if(!AND&&'serviceWorker' in navigator&&location.protocol!=='file:'){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});}
 })();
 </script>
 </body>
